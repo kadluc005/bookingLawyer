@@ -1,0 +1,27 @@
+<a class="back" routerLink="/annuaire">← Annuaire</a>
+    @if (profile; as p) {
+      <article class="sheet detail">
+        <div class="avatar">{{ p.first[0] }}{{ p.last[0] }}</div>
+        <p class="kicker">{{ labels[p.specialty] }}</p>
+        <h1>Me {{ p.first }} {{ p.last }}</h1>
+        <p>{{ p.city }}, {{ p.country }} · {{ p.years }} ans de pratique</p>
+        <hr />
+        <h2>Présentation du cabinet</h2>
+        <p>{{ p.bio }}</p>
+        <h2>Contacter le cabinet</h2>
+        @if (session.account()?.role === 'client') {
+        <div class="actions">
+          <button type="button" (click)="reveal('email')">Afficher l’e-mail</button>
+          <button type="button" class="secondary" (click)="reveal('phone')">Afficher le téléphone</button>
+        </div>
+        @if (revealed?.lawyerId === p.id) {
+          <p role="status">Coordonnée fictive · {{ revealed?.value }}</p>
+        }
+        } @else {
+          <a class="button" routerLink="/connexion" [queryParams]="{ avocat: p.id }">Se connecter comme client pour voir les coordonnées</a>
+        }
+      </article>
+    } @else {
+      <h1>Profil introuvable</h1>
+      <a routerLink="/annuaire">Revenir à l’annuaire</a>
+    }

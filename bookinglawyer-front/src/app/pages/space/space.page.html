@@ -1,0 +1,40 @@
+<p class="kicker">Espace avocat</p>
+    <h1>Mon dossier</h1>
+    @if (d.confirmed) {
+      <div class="layout">
+        <aside class="sheet panel">
+          <p class="kicker">Profil privé</p>
+          <h2>Me {{ d.profile.firstName }} {{ d.profile.lastName }}</h2>
+          <p>{{ d.profile.city }}, {{ d.profile.country }}</p>
+        </aside>
+        <section class="sheet panel">
+          <h2>Suivi de l’inscription</h2>
+          <dl>
+            <dt>Informations</dt>
+            <dd>Confirmées dans cet onglet</dd>
+            <dt>Cotisation annuelle</dt>
+            <dd>{{ d.method ? 'En attente de paiement' : 'À créer' }}</dd>
+            <dt>Validation administrative</dt>
+            <dd>{{ reviewLabel }}</dd>
+            <dt>Visibilité publique</dt>
+            <dd>Profil privé</dd>
+          </dl>
+          <a class="button" routerLink="/cotisation"
+            >Consulter ma cotisation →</a
+          >
+        </section>
+      </div>
+    } @else {
+      <section class="sheet panel">
+        <h2>Commencer mon inscription</h2>
+        <p>
+          Préparez votre CV et les coordonnées de votre cabinet pour constituer
+          votre dossier.
+        </p>
+        @if (d.accountEmail) {
+          <a class="button" routerLink="/inscription/profil">Continuer mon profil →</a>
+        } @else {
+          <a class="button" routerLink="/inscription">Créer mon compte avocat →</a>
+        }
+      </section>
+    }

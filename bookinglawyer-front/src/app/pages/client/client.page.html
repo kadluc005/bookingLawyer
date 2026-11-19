@@ -1,0 +1,20 @@
+<h1>{{ registering ? 'Créer mon compte client' : 'Mon profil client' }}</h1>
+<form class="sheet panel detail" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false; duplicateEmail = false">
+  <div class="fields">
+    <label>Prénom <input name="firstName" [(ngModel)]="profile.firstName" required maxlength="120" /></label>
+    <label>Nom <input name="lastName" [(ngModel)]="profile.lastName" required maxlength="120" /></label>
+    <label>Pays <input name="country" [(ngModel)]="profile.country" required maxlength="120" /></label>
+    <label>Ville <input name="city" [(ngModel)]="profile.city" required maxlength="120" /></label>
+    <label>Téléphone <input type="tel" name="phone" [(ngModel)]="profile.phone" required maxlength="32" /></label>
+    <label>Adresse e-mail <input type="email" name="email" [(ngModel)]="profile.email" [readOnly]="!registering" required email maxlength="320" /></label>
+    @if (registering) {
+      <label>Mot de passe (8 caractères minimum)
+        <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required minlength="8" />
+      </label>
+    }
+  </div>
+  @if (form.submitted && form.invalid) { <p role="alert">Vérifiez les champs indiqués.</p> }
+  @if (duplicateEmail) { <p role="alert">Cette adresse est déjà enregistrée dans la démonstration.</p> }
+  @if (saved) { <p role="status">Profil enregistré dans cet onglet.</p> }
+  <button type="submit">{{ registering ? 'Créer mon compte de démonstration' : 'Enregistrer' }}</button>
+</form>

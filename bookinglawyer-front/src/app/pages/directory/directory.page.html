@@ -1,0 +1,49 @@
+<section class="hero">
+  <div>
+    <h1>Trouvez votre avocat</h1>
+    <p>
+      Recherchez un professionnel par nom, par lieu d’exercice ou par
+      spécialité.
+    </p>
+  </div>
+  <div class="architecture" aria-hidden="true"></div>
+</section>
+<div class="filter sheet">
+  <label
+    >Nom ou localisation<input
+      type="search"
+      placeholder="Ex. Lawson, Lomé…"
+      [(ngModel)]="query"
+  /></label>
+  <label
+    >Spécialité<select [(ngModel)]="specialty">
+      <option value="">Toutes les spécialités</option>
+      @for (s of choices; track s[0]) {
+      <option [value]="s[0]">{{s[1]}}</option>
+      }
+    </select></label
+  >
+</div>
+<section>
+  <div class="section-head">
+    <div>
+      <h2>Les professionnels</h2>
+      <small>Profils de démonstration</small>
+    </div>
+    <span aria-live="polite"
+      >{{results.length}} résultat{{results.length > 1 ? 's' : ''}}</span
+    >
+  </div>
+  @if (results.length) {
+  <div class="grid">
+    @for (p of results; track p.id) {
+    <app-lawyer-card [lawyer]="p" />
+    }
+  </div>
+  } @else {
+    <div class="sheet">
+      <h3>Aucun profil trouvé</h3>
+      <button (click)="query=''; specialty=''">Effacer les filtres</button>
+    </div>
+  }
+</section>

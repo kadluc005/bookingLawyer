@@ -1,0 +1,204 @@
+<p class="kicker">Espace avocat</p>
+<h1>Configurer mon profil avocat</h1>
+<div class="layout">
+  <aside class="sheet steps">
+    <h3>Votre inscription</h3>
+    @for (label of ['Joindre un CV','Vérifier le profil','Confirmer']; track
+    label; let i=$index) {
+    <div [class.current]="step===i+1"><b>{{i+1}}</b>{{label}}</div>
+    }
+    <small
+      >Votre brouillon est conservé en mémoire jusqu’à la fermeture ou
+      l’actualisation de la page.</small
+    >
+  </aside>
+  <section class="sheet panel">
+    @if(step===1){
+    <h2>Joindre votre CV</h2>
+    <p>
+      Le premier document sert au préremplissage. Vous pouvez aussi saisir
+      directement vos informations.
+    </p>
+    <label class="upload"
+      >Choisir des documents<input
+        type="file"
+        accept=".pdf,.docx,.txt"
+        multiple
+        (change)="load($event)"
+        [disabled]="busy"
+      /><small>PDF, DOCX ou TXT · 5 documents · 5 Mo par fichier</small></label
+    >
+    <p class="muted">
+      Dans cette version, le navigateur analyse les fichiers Word et texte. Pour
+      un PDF, la saisie est manuelle.
+    </p>
+    @for(f of dossier.documents;track $index){
+    <div class="file">{{f.name}}</div>
+    } @if(busy){
+    <p role="status">Lecture du CV…</p>
+    }
+    <p role="status">{{notice}}</p>
+    <button [disabled]="busy" (click)="go(2)">Continuer →</button> }
+    @if(step===2){
+    <h2>Votre profil professionnel</h2>
+    <p>
+      Relisez les informations proposées et complétez les champs obligatoires.
+    </p>
+    <form
+      (input)="invalidate()"
+      (change)="invalidate()"
+      #form="ngForm"
+      (ngSubmit)="form.valid && go(3)"
+    >
+      <div class="fields">
+        <label
+          >Prénom<input
+            name="firstName"
+            [(ngModel)]="p.firstName"
+            required
+            maxlength="120"
+        /></label>
+        <label
+          >Nom<input
+            name="lastName"
+            [(ngModel)]="p.lastName"
+            required
+            maxlength="120"
+        /></label>
+        <label
+          >Adresse e-mail<input
+            name="email"
+            type="email"
+            email
+            [value]="dossier.accountEmail"
+            readonly
+        /></label>
+        <label
+          >Téléphone<input
+            name="phone"
+            type="tel"
+            [(ngModel)]="p.phone"
+            required
+            maxlength="32"
+        /></label>
+        <label
+          >Pays<input
+            name="country"
+            [(ngModel)]="p.country"
+            required
+            maxlength="120"
+        /></label>
+        <label
+          >Ville<input
+            name="city"
+            [(ngModel)]="p.city"
+            required
+            maxlength="120"
+        /></label>
+        <label
+          >Rue du cabinet<input
+            name="street"
+            [(ngModel)]="p.officeStreet"
+            required
+            maxlength="200"
+        /></label>
+        <label
+          >Numéro du cabinet<input
+            name="number"
+            [(ngModel)]="p.officeNumber"
+            required
+            maxlength="40"
+        /></label>
+        <label
+          >Spécialité<select
+            name="specialty"
+            [(ngModel)]="p.specialty"
+            required
+          >
+            <option value="">Choisir</option>
+            @for(s of choices;track s[0]){
+            <option [value]="s[0]">{{s[1]}}</option>
+            }
+          </select></label
+        >
+        <label
+          >Années de pratique (facultatif)<input
+            type="number"
+            min="0"
+            step="1"
+            name="years"
+            [(ngModel)]="p.experienceYears"
+        /></label>
+        <label
+          >Site web (facultatif)<input
+            type="url"
+            placeholder="https://…"
+            name="website"
+            [(ngModel)]="p.websiteUrl"
+        /></label>
+        <label
+          >Photo (facultatif)<input
+            type="file"
+            accept="image/jpeg,image/png"
+            (change)="photo($event)"
+          />{{dossier.photo?.name}}</label
+        >
+      </div>
+      <label
+        >Présentation du parcours (facultatif)<textarea
+          name="cvText"
+          rows="4"
+          [(ngModel)]="p.cvText"
+        ></textarea>
+      </label>
+      @if(form.submitted && form.invalid){
+      <p role="alert">Vérifiez les champs indiqués.</p>
+      }
+      <p role="status">{{notice}}</p>
+      <div class="actions">
+        <button type="button" class="secondary" (click)="go(1)">Retour</button
+        ><button>Relire le dossier →</button>
+      </div>
+    </form>
+    } @if(step===3){
+    <h2>Confirmer votre dossier</h2>
+    <h3>Me {{p.firstName}} {{p.lastName}}</h3>
+    <dl>
+      <dt>Spécialité</dt>
+      <dd>{{specialtyLabel}}</dd>
+      <dt>Cabinet</dt>
+      <dd>{{p.officeNumber}} {{p.officeStreet}}, {{p.city}}, {{p.country}}</dd>
+      <dt>Contact</dt>
+      <dd>{{p.email}} · {{p.phone}}</dd>
+      <dt>Expérience</dt>
+      <dd>{{p.experienceYears ?? '—'}}</dd>
+      <dt>Site web</dt>
+      <dd>{{p.websiteUrl || '—'}}</dd>
+      <dt>Présentation</dt>
+      <dd>{{p.cvText || '—'}}</dd>
+      <dt>Photo</dt>
+      <dd>{{dossier.photo?.name || '—'}}</dd>
+      <dt>Documents joints</dt>
+      <dd>
+        @for(f of dossier.documents;track $index){
+        <div>{{f.name}}</div>
+        } @empty {Aucun}
+      </dd>
+    </dl>
+    <p>
+      La publication nécessite une cotisation active et une validation
+      administrative. Cette démonstration conserve le dossier dans cet onglet.
+    </p>
+    <label class="check"
+      ><input type="checkbox" [(ngModel)]="checked" />J’ai vérifié les
+      informations de mon profil.</label
+    >
+    <div class="actions">
+      <button class="secondary" (click)="go(2)">Modifier</button
+      ><button [disabled]="!checked" (click)="confirm()">
+        Confirmer mon profil
+      </button>
+    </div>
+    }
+  </section>
+</div>

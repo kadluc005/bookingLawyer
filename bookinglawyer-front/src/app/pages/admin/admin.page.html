@@ -1,0 +1,47 @@
+<h1>Administration</h1>
+<section class="sheet panel">
+  <h2>Validation des avocats</h2>
+  @if (dossier.confirmed) {
+    <div class="actions">
+      <span>Me {{ dossier.profile.firstName }} {{ dossier.profile.lastName }} · {{ reviewLabels[activity.reviews()[dossier.reviewId] ?? 'pending_review'] }}</span>
+      <button type="button" (click)="review(dossier.reviewId, 'approved')">Approuver</button>
+      <button type="button" class="secondary" (click)="review(dossier.reviewId, 'rejected')">Rejeter</button>
+      <button type="button" class="secondary" (click)="selectedId = dossier.reviewId">Activité</button>
+    </div>
+  }
+  @for (lawyer of lawyers; track lawyer.id) {
+    <div class="actions">
+      <span>Me {{ lawyer.first }} {{ lawyer.last }} · {{ reviewLabels[activity.reviews()[lawyer.id] ?? 'approved'] }}</span>
+      <button type="button" (click)="review(lawyer.id, 'approved')">Approuver</button>
+      <button type="button" class="secondary" (click)="review(lawyer.id, 'rejected')">Rejeter</button>
+      <button type="button" class="secondary" (click)="selectedId = lawyer.id">Activité</button>
+    </div>
+  }
+  @if (selectedId) {
+    <hr />
+    <h3>Contacts</h3>
+    <ul>
+      @for (entry of activity.contacts(); track entry) {
+        @if (entry.lawyerId === selectedId) {
+          <li>{{ entry.date | date:'dd/MM/yyyy HH:mm' }} · {{ entry.clientEmail }} · {{ entry.channel === 'email' ? 'E-mail' : 'Téléphone' }}</li>
+        }
+      }
+    </ul>
+    <h3>Journal des décisions</h3>
+    <ul>
+      @for (entry of activity.audit(); track entry) {
+        @if (entry.lawyerId === selectedId) {
+          <li>{{ entry.date | date:'dd/MM/yyyy HH:mm' }} · {{ entry.actor }} · {{ reviewLabels[entry.status] }}</li>
+        }
+      }
+    </ul>
+  }
+</section>
+<section class="sheet panel">
+  <h2>Clients inscrits dans cet onglet</h2>
+  @for (client of clients(); track client.email) {
+    <p>{{ client.firstName }} {{ client.lastName }} · {{ client.city }}, {{ client.country }} · {{ client.email }}</p>
+  } @empty {
+    <p>Aucun profil client enregistré.</p>
+  }
+</section>

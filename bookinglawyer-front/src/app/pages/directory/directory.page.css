@@ -1,0 +1,44 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 283px;
+  padding: clamp(28px, 6vw, 64px);
+  border-radius: 20px;
+  background: linear-gradient(115deg, #10213d 42%, #213e69);
+  color: white;
+}
+
+.hero h1 {
+  max-width: 600px;
+  margin-bottom: 16px;
+  font-size: clamp(2.35rem, 5vw, 4.25rem);
+}
+
+.hero p {
+  max-width: 390px;
+  margin: 0;
+  color: #d5e3f9;
+}
+
+.architecture {
+  position: absolute;
+  z-index: -1;
+  bottom: -110px;
+  right: 5%;
+  width: clamp(175px, 28vw, 350px);
+  height: 350px;
+  border: 1px solid #a0bce660;
+  border-radius: 180px 180px 0 0;
+  background: repeating-linear-gradient(90deg, transparent 0 23px, #a0bce640 23px 24px);
+  transform: rotate(24deg);
+}
+
+@media (max-width: 800px) {
+  .architecture {
+    right: -9%;
+    opacity: 0.35;
+  }
+}

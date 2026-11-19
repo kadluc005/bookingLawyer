@@ -1,0 +1,3007 @@
+{
+  "type": "base",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "6571102b-9466-423a-a530-b5adc8dbd661",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "account_status"
+      ],
+      "writes": [
+        "s|enum|public.account_status",
+        "n|enum|public.account_status",
+        "e|enum|public.account_status",
+        "n|type|public.account_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "contact_channel"
+      ],
+      "writes": [
+        "s|enum|public.contact_channel",
+        "n|enum|public.contact_channel",
+        "e|enum|public.contact_channel",
+        "n|type|public.contact_channel"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "cv_extraction_status"
+      ],
+      "writes": [
+        "s|enum|public.cv_extraction_status",
+        "n|enum|public.cv_extraction_status",
+        "e|enum|public.cv_extraction_status",
+        "n|type|public.cv_extraction_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "lawyer_review_status"
+      ],
+      "writes": [
+        "s|enum|public.lawyer_review_status",
+        "n|enum|public.lawyer_review_status",
+        "e|enum|public.lawyer_review_status",
+        "n|type|public.lawyer_review_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "lawyer_specialty"
+      ],
+      "writes": [
+        "s|enum|public.lawyer_specialty",
+        "n|enum|public.lawyer_specialty",
+        "e|enum|public.lawyer_specialty",
+        "n|type|public.lawyer_specialty"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "membership_status"
+      ],
+      "writes": [
+        "s|enum|public.membership_status",
+        "n|enum|public.membership_status",
+        "e|enum|public.membership_status",
+        "n|type|public.membership_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "payment_method"
+      ],
+      "writes": [
+        "s|enum|public.payment_method",
+        "n|enum|public.payment_method",
+        "e|enum|public.payment_method",
+        "n|type|public.payment_method"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "payment_status"
+      ],
+      "writes": [
+        "s|enum|public.payment_status",
+        "n|enum|public.payment_status",
+        "e|enum|public.payment_status",
+        "n|type|public.payment_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "user_role"
+      ],
+      "writes": [
+        "s|enum|public.user_role",
+        "n|enum|public.user_role",
+        "e|enum|public.user_role",
+        "n|type|public.user_role"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "audit_logs"
+      ],
+      "writes": [
+        "s|tbl|public.audit_logs",
+        "n|tbl|public.audit_logs",
+        "e|tbl|public.audit_logs",
+        "n|rel|public.audit_logs",
+        "n|type|public.audit_logs",
+        "n|rel|public.audit_logs_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "client_profiles"
+      ],
+      "writes": [
+        "s|tbl|public.client_profiles",
+        "n|tbl|public.client_profiles",
+        "e|tbl|public.client_profiles",
+        "n|rel|public.client_profiles",
+        "n|type|public.client_profiles",
+        "n|rel|public.client_profiles_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "contact_events"
+      ],
+      "writes": [
+        "s|tbl|public.contact_events",
+        "n|tbl|public.contact_events",
+        "e|tbl|public.contact_events",
+        "n|rel|public.contact_events",
+        "n|type|public.contact_events",
+        "n|rel|public.contact_events_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.contact_channel"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "cv_extractions"
+      ],
+      "writes": [
+        "s|tbl|public.cv_extractions",
+        "n|tbl|public.cv_extractions",
+        "e|tbl|public.cv_extractions",
+        "n|rel|public.cv_extractions",
+        "n|type|public.cv_extractions",
+        "n|rel|public.cv_extractions_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.cv_extraction_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "lawyer_documents"
+      ],
+      "writes": [
+        "s|tbl|public.lawyer_documents",
+        "n|tbl|public.lawyer_documents",
+        "e|tbl|public.lawyer_documents",
+        "n|rel|public.lawyer_documents",
+        "n|type|public.lawyer_documents",
+        "n|rel|public.lawyer_documents_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "lawyer_profiles"
+      ],
+      "writes": [
+        "s|tbl|public.lawyer_profiles",
+        "n|tbl|public.lawyer_profiles",
+        "e|tbl|public.lawyer_profiles",
+        "n|rel|public.lawyer_profiles",
+        "n|type|public.lawyer_profiles",
+        "n|rel|public.lawyer_profiles_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.lawyer_specialty",
+        "n|enum|public.lawyer_review_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "memberships"
+      ],
+      "writes": [
+        "s|tbl|public.memberships",
+        "n|tbl|public.memberships",
+        "e|tbl|public.memberships",
+        "n|rel|public.memberships",
+        "n|type|public.memberships",
+        "n|rel|public.memberships_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.membership_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "payments"
+      ],
+      "writes": [
+        "s|tbl|public.payments",
+        "n|tbl|public.payments",
+        "e|tbl|public.payments",
+        "n|rel|public.payments",
+        "n|type|public.payments",
+        "n|rel|public.payments_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.payment_method",
+        "n|enum|public.payment_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|tbl|public.users",
+        "n|tbl|public.users",
+        "e|tbl|public.users",
+        "n|rel|public.users",
+        "n|type|public.users",
+        "n|rel|public.users_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.user_role",
+        "n|enum|public.account_status"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "audit_logs",
+        "audit_logs_actor_created_idx"
+      ],
+      "writes": [
+        "s|idx|public.audit_logs_actor_created_idx",
+        "n|idx|public.audit_logs_actor_created_idx",
+        "e|idx|public.audit_logs_actor_created_idx",
+        "n|rel|public.audit_logs_actor_created_idx"
+      ],
+      "reads": [
+        "n|tbl|public.audit_logs",
+        "n|sch|public",
+        "n|col|public.audit_logs.actor_user_id",
+        "n|col|public.audit_logs.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "audit_logs",
+        "audit_logs_entity_idx"
+      ],
+      "writes": [
+        "s|idx|public.audit_logs_entity_idx",
+        "n|idx|public.audit_logs_entity_idx",
+        "e|idx|public.audit_logs_entity_idx",
+        "n|rel|public.audit_logs_entity_idx"
+      ],
+      "reads": [
+        "n|tbl|public.audit_logs",
+        "n|sch|public",
+        "n|col|public.audit_logs.entity_type",
+        "n|col|public.audit_logs.entity_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "client_profiles",
+        "client_profiles_name_idx"
+      ],
+      "writes": [
+        "s|idx|public.client_profiles_name_idx",
+        "n|idx|public.client_profiles_name_idx",
+        "e|idx|public.client_profiles_name_idx",
+        "n|rel|public.client_profiles_name_idx"
+      ],
+      "reads": [
+        "n|tbl|public.client_profiles",
+        "n|sch|public",
+        "n|col|public.client_profiles.last_name",
+        "n|col|public.client_profiles.first_name"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "client_profiles",
+        "client_profiles_location_idx"
+      ],
+      "writes": [
+        "s|idx|public.client_profiles_location_idx",
+        "n|idx|public.client_profiles_location_idx",
+        "e|idx|public.client_profiles_location_idx",
+        "n|rel|public.client_profiles_location_idx"
+      ],
+      "reads": [
+        "n|tbl|public.client_profiles",
+        "n|sch|public",
+        "n|col|public.client_profiles.country",
+        "n|col|public.client_profiles.city"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "contact_events",
+        "contact_events_lawyer_created_idx"
+      ],
+      "writes": [
+        "s|idx|public.contact_events_lawyer_created_idx",
+        "n|idx|public.contact_events_lawyer_created_idx",
+        "e|idx|public.contact_events_lawyer_created_idx",
+        "n|rel|public.contact_events_lawyer_created_idx"
+      ],
+      "reads": [
+        "n|tbl|public.contact_events",
+        "n|sch|public",
+        "n|col|public.contact_events.lawyer_user_id",
+        "n|col|public.contact_events.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "contact_events",
+        "contact_events_client_created_idx"
+      ],
+      "writes": [
+        "s|idx|public.contact_events_client_created_idx",
+        "n|idx|public.contact_events_client_created_idx",
+        "e|idx|public.contact_events_client_created_idx",
+        "n|rel|public.contact_events_client_created_idx"
+      ],
+      "reads": [
+        "n|tbl|public.contact_events",
+        "n|sch|public",
+        "n|col|public.contact_events.client_user_id",
+        "n|col|public.contact_events.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "cv_extractions",
+        "cv_extractions_document_created_idx"
+      ],
+      "writes": [
+        "s|idx|public.cv_extractions_document_created_idx",
+        "n|idx|public.cv_extractions_document_created_idx",
+        "e|idx|public.cv_extractions_document_created_idx",
+        "n|rel|public.cv_extractions_document_created_idx"
+      ],
+      "reads": [
+        "n|tbl|public.cv_extractions",
+        "n|sch|public",
+        "n|col|public.cv_extractions.document_id",
+        "n|col|public.cv_extractions.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_documents",
+        "lawyer_documents_storage_key_unique"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_documents_storage_key_unique",
+        "n|idx|public.lawyer_documents_storage_key_unique",
+        "e|idx|public.lawyer_documents_storage_key_unique",
+        "n|rel|public.lawyer_documents_storage_key_unique"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_documents",
+        "n|sch|public",
+        "n|col|public.lawyer_documents.storage_key"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_documents",
+        "lawyer_documents_lawyer_number_unique"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_documents_lawyer_number_unique",
+        "n|idx|public.lawyer_documents_lawyer_number_unique",
+        "e|idx|public.lawyer_documents_lawyer_number_unique",
+        "n|rel|public.lawyer_documents_lawyer_number_unique"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_documents",
+        "n|sch|public",
+        "n|col|public.lawyer_documents.lawyer_user_id",
+        "n|col|public.lawyer_documents.document_number"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_documents",
+        "lawyer_documents_lawyer_idx"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_documents_lawyer_idx",
+        "n|idx|public.lawyer_documents_lawyer_idx",
+        "e|idx|public.lawyer_documents_lawyer_idx",
+        "n|rel|public.lawyer_documents_lawyer_idx"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_documents",
+        "n|sch|public",
+        "n|col|public.lawyer_documents.lawyer_user_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_profiles",
+        "lawyer_profiles_directory_idx"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_profiles_directory_idx",
+        "n|idx|public.lawyer_profiles_directory_idx",
+        "e|idx|public.lawyer_profiles_directory_idx",
+        "n|rel|public.lawyer_profiles_directory_idx"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.review_status",
+        "n|col|public.lawyer_profiles.country",
+        "n|col|public.lawyer_profiles.city",
+        "n|col|public.lawyer_profiles.specialty"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_profiles",
+        "lawyer_profiles_office_location_idx"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_profiles_office_location_idx",
+        "n|idx|public.lawyer_profiles_office_location_idx",
+        "e|idx|public.lawyer_profiles_office_location_idx",
+        "n|rel|public.lawyer_profiles_office_location_idx"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.review_status",
+        "n|col|public.lawyer_profiles.office_country",
+        "n|col|public.lawyer_profiles.office_city"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_profiles",
+        "lawyer_profiles_name_idx"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_profiles_name_idx",
+        "n|idx|public.lawyer_profiles_name_idx",
+        "e|idx|public.lawyer_profiles_name_idx",
+        "n|rel|public.lawyer_profiles_name_idx"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.last_name",
+        "n|col|public.lawyer_profiles.first_name"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "lawyer_profiles",
+        "lawyer_profiles_experience_idx"
+      ],
+      "writes": [
+        "s|idx|public.lawyer_profiles_experience_idx",
+        "n|idx|public.lawyer_profiles_experience_idx",
+        "e|idx|public.lawyer_profiles_experience_idx",
+        "n|rel|public.lawyer_profiles_experience_idx"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.experience_years"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "memberships",
+        "memberships_lawyer_status_idx"
+      ],
+      "writes": [
+        "s|idx|public.memberships_lawyer_status_idx",
+        "n|idx|public.memberships_lawyer_status_idx",
+        "e|idx|public.memberships_lawyer_status_idx",
+        "n|rel|public.memberships_lawyer_status_idx"
+      ],
+      "reads": [
+        "n|tbl|public.memberships",
+        "n|sch|public",
+        "n|col|public.memberships.lawyer_user_id",
+        "n|col|public.memberships.status"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "payments",
+        "payments_provider_reference_unique"
+      ],
+      "writes": [
+        "s|idx|public.payments_provider_reference_unique",
+        "n|idx|public.payments_provider_reference_unique",
+        "e|idx|public.payments_provider_reference_unique",
+        "n|rel|public.payments_provider_reference_unique"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|col|public.payments.provider",
+        "n|col|public.payments.provider_reference"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "payments",
+        "payments_membership_status_idx"
+      ],
+      "writes": [
+        "s|idx|public.payments_membership_status_idx",
+        "n|idx|public.payments_membership_status_idx",
+        "e|idx|public.payments_membership_status_idx",
+        "n|rel|public.payments_membership_status_idx"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|col|public.payments.membership_id",
+        "n|col|public.payments.status"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "users",
+        "users_email_lower_unique"
+      ],
+      "writes": [
+        "s|idx|public.users_email_lower_unique",
+        "n|idx|public.users_email_lower_unique",
+        "e|idx|public.users_email_lower_unique",
+        "n|rel|public.users_email_lower_unique"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "users",
+        "users_role_status_idx"
+      ],
+      "writes": [
+        "s|idx|public.users_role_status_idx",
+        "n|idx|public.users_role_status_idx",
+        "e|idx|public.users_role_status_idx",
+        "n|rel|public.users_role_status_idx"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.role",
+        "n|col|public.users.status"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "audit_logs"
+      ],
+      "writes": [
+        "s|fk|public.audit_logs.audit_logs_actor_user_id_users_id_fkey",
+        "n|fk|public.audit_logs.audit_logs_actor_user_id_users_id_fkey",
+        "e|fk|public.audit_logs.audit_logs_actor_user_id_users_id_fkey",
+        "n|con|public.audit_logs.audit_logs_actor_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.audit_logs",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.audit_logs.actor_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "client_profiles"
+      ],
+      "writes": [
+        "s|fk|public.client_profiles.client_profiles_user_id_users_id_fkey",
+        "n|fk|public.client_profiles.client_profiles_user_id_users_id_fkey",
+        "e|fk|public.client_profiles.client_profiles_user_id_users_id_fkey",
+        "n|con|public.client_profiles.client_profiles_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.client_profiles",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.client_profiles.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "contact_events"
+      ],
+      "writes": [
+        "s|fk|public.contact_events.contact_events_client_user_id_client_profiles_user_id_fkey",
+        "n|fk|public.contact_events.contact_events_client_user_id_client_profiles_user_id_fkey",
+        "e|fk|public.contact_events.contact_events_client_user_id_client_profiles_user_id_fkey",
+        "n|con|public.contact_events.contact_events_client_user_id_client_profiles_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.contact_events",
+        "n|sch|public",
+        "n|tbl|public.client_profiles",
+        "n|sch|public",
+        "n|col|public.contact_events.client_user_id",
+        "n|col|public.client_profiles.user_id",
+        "e|uniqueness|public.client_profiles.user_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "contact_events"
+      ],
+      "writes": [
+        "s|fk|public.contact_events.contact_events_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|fk|public.contact_events.contact_events_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "e|fk|public.contact_events.contact_events_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|con|public.contact_events.contact_events_lawyer_user_id_lawyer_profiles_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.contact_events",
+        "n|sch|public",
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.contact_events.lawyer_user_id",
+        "n|col|public.lawyer_profiles.user_id",
+        "e|uniqueness|public.lawyer_profiles.user_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "cv_extractions"
+      ],
+      "writes": [
+        "s|fk|public.cv_extractions.cv_extractions_document_id_lawyer_documents_id_fkey",
+        "n|fk|public.cv_extractions.cv_extractions_document_id_lawyer_documents_id_fkey",
+        "e|fk|public.cv_extractions.cv_extractions_document_id_lawyer_documents_id_fkey",
+        "n|con|public.cv_extractions.cv_extractions_document_id_lawyer_documents_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.cv_extractions",
+        "n|sch|public",
+        "n|tbl|public.lawyer_documents",
+        "n|sch|public",
+        "n|col|public.cv_extractions.document_id",
+        "n|col|public.lawyer_documents.id",
+        "e|uniqueness|public.lawyer_documents.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "lawyer_documents"
+      ],
+      "writes": [
+        "s|fk|public.lawyer_documents.lawyer_documents_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|fk|public.lawyer_documents.lawyer_documents_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "e|fk|public.lawyer_documents.lawyer_documents_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|con|public.lawyer_documents.lawyer_documents_lawyer_user_id_lawyer_profiles_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_documents",
+        "n|sch|public",
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.lawyer_documents.lawyer_user_id",
+        "n|col|public.lawyer_profiles.user_id",
+        "e|uniqueness|public.lawyer_profiles.user_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "lawyer_profiles"
+      ],
+      "writes": [
+        "s|fk|public.lawyer_profiles.lawyer_profiles_user_id_users_id_fkey",
+        "n|fk|public.lawyer_profiles.lawyer_profiles_user_id_users_id_fkey",
+        "e|fk|public.lawyer_profiles.lawyer_profiles_user_id_users_id_fkey",
+        "n|con|public.lawyer_profiles.lawyer_profiles_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "lawyer_profiles"
+      ],
+      "writes": [
+        "s|fk|public.lawyer_profiles.lawyer_profiles_reviewed_by_users_id_fkey",
+        "n|fk|public.lawyer_profiles.lawyer_profiles_reviewed_by_users_id_fkey",
+        "e|fk|public.lawyer_profiles.lawyer_profiles_reviewed_by_users_id_fkey",
+        "n|con|public.lawyer_profiles.lawyer_profiles_reviewed_by_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.lawyer_profiles.reviewed_by",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "memberships"
+      ],
+      "writes": [
+        "s|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "e|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|con|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.memberships",
+        "n|sch|public",
+        "n|tbl|public.lawyer_profiles",
+        "n|sch|public",
+        "n|col|public.memberships.lawyer_user_id",
+        "n|col|public.lawyer_profiles.user_id",
+        "e|uniqueness|public.lawyer_profiles.user_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "payments"
+      ],
+      "writes": [
+        "s|fk|public.payments.payments_membership_id_memberships_id_fkey",
+        "n|fk|public.payments.payments_membership_id_memberships_id_fkey",
+        "e|fk|public.payments.payments_membership_id_memberships_id_fkey",
+        "n|con|public.payments.payments_membership_id_memberships_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|tbl|public.memberships",
+        "n|sch|public",
+        "n|col|public.payments.membership_id",
+        "n|col|public.memberships.id",
+        "e|uniqueness|public.memberships.id"
+      ]
+    }
+  ],
+  "ddl": [
+    {
+      "schema": "public",
+      "name": "audit_logs",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "client_profiles",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "contact_events",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "cv_extractions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "lawyer_documents",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "lawyer_profiles",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "memberships",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "payments",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "users",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "account_status",
+      "values": [
+        "pending_email_verification",
+        "active",
+        "suspended"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "contact_channel",
+      "values": [
+        "email",
+        "phone"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "cv_extraction_status",
+      "values": [
+        "queued",
+        "processing",
+        "completed",
+        "needs_review",
+        "failed"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "lawyer_review_status",
+      "values": [
+        "pending_review",
+        "approved",
+        "rejected"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "lawyer_specialty",
+      "values": [
+        "criminal_law",
+        "civil_law",
+        "arbitration",
+        "cybercrime"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "membership_status",
+      "values": [
+        "pending_payment",
+        "active",
+        "expired",
+        "cancelled"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "payment_method",
+      "values": [
+        "bank_transfer",
+        "paypal",
+        "cryptocurrency"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "payment_status",
+      "values": [
+        "pending",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "refunded"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "user_role",
+      "values": [
+        "lawyer",
+        "client",
+        "admin"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "actor_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "action",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "entity_type",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "entity_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "metadata",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "first_name",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "last_name",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "country",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "city",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "phone",
+      "type": "varchar(32)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "client_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "lawyer_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "channel",
+      "type": "contact_channel",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "document_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "status",
+      "type": "cv_extraction_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'queued'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "extracted_data",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "failure_reason",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "completed_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "document_number",
+      "type": "smallint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "storage_key",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "original_name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "mime_type",
+      "type": "varchar(127)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "size_bytes",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "first_name",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "last_name",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "country",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "city",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "phone",
+      "type": "varchar(32)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "office_country",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "office_city",
+      "type": "varchar(120)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "office_street",
+      "type": "varchar(200)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "office_number",
+      "type": "varchar(40)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "specialty",
+      "type": "lawyer_specialty",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "photo_storage_key",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "cv_text",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "website_url",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "experience_years",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "review_status",
+      "type": "lawyer_review_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending_review'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "reviewed_by",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "reviewed_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "lawyer_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "status",
+      "type": "membership_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending_payment'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "amount",
+      "type": "numeric(10,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "currency",
+      "type": "varchar(3)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'EUR'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "starts_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "ends_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "membership_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "method",
+      "type": "payment_method",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "status",
+      "type": "payment_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "amount",
+      "type": "numeric(10,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "currency",
+      "type": "varchar(3)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'EUR'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "provider",
+      "type": "varchar(80)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "provider_reference",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "paid_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "email",
+      "type": "varchar(320)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "password_hash",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "role",
+      "type": "user_role",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "status",
+      "type": "account_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending_email_verification'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "email_verified_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "audit_logs_actor_created_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "actor_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "audit_logs_entity_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "entity_type",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "entity_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "client_profiles_name_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "last_name",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "first_name",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "client_profiles_location_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "country",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "city",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "contact_events_lawyer_created_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lawyer_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "contact_events_client_created_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "client_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "cv_extractions_document_created_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "document_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_storage_key_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "storage_key",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_lawyer_number_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lawyer_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "document_number",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_lawyer_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lawyer_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_directory_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "review_status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "country",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "city",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "specialty",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_office_location_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "review_status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "office_country",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "office_city",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_name_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "last_name",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "first_name",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_experience_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "experience_years",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "memberships_lawyer_status_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lawyer_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "payments_provider_reference_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "provider",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "provider_reference",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "\"provider_reference\" IS NOT NULL",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "payments_membership_status_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "membership_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_email_lower_unique",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "lower(\"email\")",
+          "isExpression": true,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_role_status_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "role",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "audit_logs_actor_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "actor_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "SET NULL",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "client_profiles_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "contact_events_client_user_id_client_profiles_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "client_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "client_profiles",
+      "columnsTo": [
+        "user_id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "contact_events_lawyer_user_id_lawyer_profiles_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "lawyer_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lawyer_profiles",
+      "columnsTo": [
+        "user_id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "cv_extractions_document_id_lawyer_documents_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "document_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lawyer_documents",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_lawyer_user_id_lawyer_profiles_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "lawyer_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lawyer_profiles",
+      "columnsTo": [
+        "user_id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_reviewed_by_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "reviewed_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "SET NULL",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "lawyer_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "lawyer_profiles",
+      "columnsTo": [
+        "user_id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "payments_membership_id_memberships_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "membership_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "memberships",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "audit_logs",
+      "name": "audit_logs_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "client_profiles",
+      "name": "client_profiles_pkey",
+      "columns": [
+        "user_id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "contact_events",
+      "name": "contact_events_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "cv_extractions",
+      "name": "cv_extractions_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_pkey",
+      "columns": [
+        "user_id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "memberships",
+      "name": "memberships_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "payments",
+      "name": "payments_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_number_range",
+      "value": "\"document_number\" BETWEEN 1 AND 5",
+      "entityType": "checks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_documents",
+      "name": "lawyer_documents_size_positive",
+      "value": "\"size_bytes\" > 0",
+      "entityType": "checks"
+    },
+    {
+      "schema": "public",
+      "table": "lawyer_profiles",
+      "name": "lawyer_profiles_experience_nonnegative",
+      "value": "\"experience_years\" IS NULL OR \"experience_years\" >= 0",
+      "entityType": "checks"
+    }
+  ]
+}

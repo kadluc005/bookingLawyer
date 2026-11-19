@@ -1,0 +1,11 @@
+<a class="card" [routerLink]="['/avocats',lawyer.id]"
+      ><div class="card-top">
+        <div class="avatar">{{lawyer.first[0]}}{{lawyer.last[0]}}</div>
+        <small>{{lawyer.years}} ans de pratique</small>
+      </div>
+      <h3>Me {{lawyer.first}} {{lawyer.last}}</h3>
+      <p>{{lawyer.city}}, {{lawyer.country}}</p>
+      <div class="card-foot">
+        <span>{{specialties[lawyer.specialty]}}</span><b aria-hidden="true">↗</b>
+      </div></a
+    >
