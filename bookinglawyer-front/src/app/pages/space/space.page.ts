@@ -1,7 +1,8 @@
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { DossierService } from "../../services/dossier.service";
-import { ActivityService } from "../../services/activity.service";
+import { SessionService } from "../../services/session.service";
+import { errorMessage } from "../../services/api.service";
 
 @Component({
   imports: [RouterLink],
@@ -9,13 +10,22 @@ import { ActivityService } from "../../services/activity.service";
 })
 export class SpacePage {
   d = inject(DossierService);
-  private readonly activity = inject(ActivityService);
+  private readonly session = inject(SessionService);
+  error = "";
+
+  async ngOnInit() {
+    try {
+      await this.d.load(this.session);
+    } catch (error) {
+      this.error = errorMessage(error);
+    }
+  }
 
   get reviewLabel() {
     return {
       pending_review: "En attente",
       approved: "Approuvé",
       rejected: "Rejeté",
-    }[this.activity.reviews()[this.d.reviewId] ?? "pending_review"];
+    }[this.d.reviewStatus];
   }
 }

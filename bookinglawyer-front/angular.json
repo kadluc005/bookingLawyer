@@ -27,7 +27,8 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "front:build"
+            "buildTarget": "front:build",
+            "proxyConfig": "proxy.conf.json"
           }
         }
       }

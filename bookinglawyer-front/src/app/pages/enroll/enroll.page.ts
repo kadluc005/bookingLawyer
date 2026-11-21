@@ -2,11 +2,15 @@ import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { choices, specialties } from "../../models/profile.model";
+import { errorMessage } from "../../services/api.service";
+import { SessionService } from "../../services/session.service";
 import { DossierService } from "../../services/dossier.service";
 
 @Component({ imports: [FormsModule], templateUrl: "./enroll.page.html" })
 export class EnrollPage {
+  private readonly session = inject(SessionService);
   dossier = inject(DossierService);
+  error = "";
   router = inject(Router);
   choices = choices;
   labels = specialties;
@@ -20,6 +24,17 @@ export class EnrollPage {
   get specialtyLabel() {
     return this.p.specialty ? specialties[this.p.specialty] : "";
   }
+  async ngOnInit() {
+    this.busy = true;
+    try {
+      await this.dossier.load(this.session);
+    } catch (error) {
+      this.error = errorMessage(error);
+    } finally {
+      this.busy = false;
+    }
+  }
+
   async load(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files || []);
@@ -89,10 +104,25 @@ export class EnrollPage {
     this.notice = "";
     window.scrollTo(0, 0);
   }
-  confirm() {
-    if (this.checked) {
+  async confirm() {
+    if (!this.checked || this.busy) return;
+    this.busy = true;
+    this.error = "";
+    const { firstName, lastName, country, city, phone, specialty, officeStreet, officeNumber, cvText, websiteUrl } = this.p;
+    try {
+      await this.session.request("/lawyers/me", "PATCH", {
+        firstName, lastName, country, city, phone, specialty,
+        officeStreet: officeStreet || null,
+        officeNumber: officeNumber || null,
+        cvText: cvText || null,
+        websiteUrl: websiteUrl || null,
+      });
       this.dossier.confirmed = true;
-      void this.router.navigateByUrl("/espace");
+      await this.router.navigateByUrl("/espace");
+    } catch (error) {
+      this.error = errorMessage(error);
+    } finally {
+      this.busy = false;
     }
   }
 }

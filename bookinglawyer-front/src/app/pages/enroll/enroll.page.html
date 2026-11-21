@@ -1,3 +1,4 @@
+@if (error) { <p role="alert">{{ error }}</p> }
 <p class="kicker">Espace avocat</p>
 <h1>Configurer mon profil avocat</h1>
 <div class="layout">
@@ -187,7 +188,7 @@
     </dl>
     <p>
       La publication nécessite une cotisation active et une validation
-      administrative. Cette démonstration conserve le dossier dans cet onglet.
+      administrative. Les fichiers sélectionnés restent dans cet onglet.
     </p>
     <label class="check"
       ><input type="checkbox" [(ngModel)]="checked" />J’ai vérifié les
@@ -195,7 +196,7 @@
     >
     <div class="actions">
       <button class="secondary" (click)="go(2)">Modifier</button
-      ><button [disabled]="!checked" (click)="confirm()">
+      ><button [disabled]="!checked || busy" (click)="confirm()">
         Confirmer mon profil
       </button>
     </div>

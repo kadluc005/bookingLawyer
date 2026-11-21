@@ -1,33 +1,36 @@
 import { inject, Injectable } from "@angular/core";
-import { ActivityService } from "./activity.service";
-import { lawyers } from "../data/lawyers";
+import { Lawyer } from "../models/lawyer.model";
+import { SessionService } from "./session.service";
 
-const normalize = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+interface DirectoryEntry {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  city: string;
+  country: string;
+  experienceYears: number | null;
+  specialty: Lawyer["specialty"];
+}
+
 @Injectable({ providedIn: "root" })
 export class DirectoryService {
-  private readonly activity = inject(ActivityService);
+  private readonly session = inject(SessionService);
 
-  private get visibleLawyers() {
-    return lawyers.filter(({ id }) => (this.activity.reviews()[id] ?? "approved") === "approved");
-  }
-
-  search(query: string, specialty: string) {
-    const term = normalize(query);
-    return this.visibleLawyers.filter(
-      (p) =>
-        (!specialty || p.specialty === specialty) &&
-        normalize([p.first, p.last, p.city, p.country].join(" ")).includes(
-          term,
-        ),
-    );
-  }
-
-  find(id: string | null) {
-    return this.visibleLawyers.find((lawyer) => lawyer.id === id);
+  async list(): Promise<Lawyer[]> {
+    const entries: Lawyer[] = [];
+    for (let offset = 0; ; offset += 100) {
+      const page = await this.session.request<DirectoryEntry[]>("/lawyers?limit=100&offset=" + offset);
+      entries.push(...page.map(entry => ({
+        id: entry.userId,
+        first: entry.firstName,
+        last: entry.lastName,
+        city: entry.city,
+        country: entry.country,
+        years: entry.experienceYears,
+        specialty: entry.specialty,
+        bio: "",
+      })));
+      if (page.length < 100) return entries;
+    }
   }
 }

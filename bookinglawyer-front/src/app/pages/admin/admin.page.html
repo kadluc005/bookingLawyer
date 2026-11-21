@@ -1,47 +1,40 @@
 <h1>Administration</h1>
+@if (error) { <p role="alert">{{ error }}</p> }
+@if (notice) { <p role="status">{{ notice }}</p> }
 <section class="sheet panel">
   <h2>Validation des avocats</h2>
-  @if (dossier.confirmed) {
-    <div class="actions">
-      <span>Me {{ dossier.profile.firstName }} {{ dossier.profile.lastName }} · {{ reviewLabels[activity.reviews()[dossier.reviewId] ?? 'pending_review'] }}</span>
-      <button type="button" (click)="review(dossier.reviewId, 'approved')">Approuver</button>
-      <button type="button" class="secondary" (click)="review(dossier.reviewId, 'rejected')">Rejeter</button>
-      <button type="button" class="secondary" (click)="selectedId = dossier.reviewId">Activité</button>
-    </div>
-  }
-  @for (lawyer of lawyers; track lawyer.id) {
-    <div class="actions">
-      <span>Me {{ lawyer.first }} {{ lawyer.last }} · {{ reviewLabels[activity.reviews()[lawyer.id] ?? 'approved'] }}</span>
-      <button type="button" (click)="review(lawyer.id, 'approved')">Approuver</button>
-      <button type="button" class="secondary" (click)="review(lawyer.id, 'rejected')">Rejeter</button>
-      <button type="button" class="secondary" (click)="selectedId = lawyer.id">Activité</button>
-    </div>
-  }
-  @if (selectedId) {
-    <hr />
+  <label>Identifiant de l’avocat (UUID)
+    <input [(ngModel)]="lawyerId" [disabled]="busy" />
+  </label>
+  <div class="actions">
+    <button [disabled]="busy || !lawyerId.trim()" (click)="review('approved')">Approuver</button>
+    <button class="secondary" [disabled]="busy || !lawyerId.trim()" (click)="review('rejected')">Rejeter</button>
+    <button class="secondary" [disabled]="busy || !lawyerId.trim()" (click)="loadActivity()">Voir l’activité</button>
+  </div>
+  @if (contacts.length) {
     <h3>Contacts</h3>
     <ul>
-      @for (entry of activity.contacts(); track entry) {
-        @if (entry.lawyerId === selectedId) {
-          <li>{{ entry.date | date:'dd/MM/yyyy HH:mm' }} · {{ entry.clientEmail }} · {{ entry.channel === 'email' ? 'E-mail' : 'Téléphone' }}</li>
-        }
+      @for (entry of contacts; track entry.id) {
+        <li>{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ entry.email }} · {{ entry.channel }}</li>
       }
     </ul>
+  }
+  @if (audit.length) {
     <h3>Journal des décisions</h3>
     <ul>
-      @for (entry of activity.audit(); track entry) {
-        @if (entry.lawyerId === selectedId) {
-          <li>{{ entry.date | date:'dd/MM/yyyy HH:mm' }} · {{ entry.actor }} · {{ reviewLabels[entry.status] }}</li>
-        }
+      @for (entry of audit; track entry.id) {
+        <li>{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ entry.action }}</li>
       }
     </ul>
   }
 </section>
 <section class="sheet panel">
-  <h2>Clients inscrits dans cet onglet</h2>
-  @for (client of clients(); track client.email) {
-    <p>{{ client.firstName }} {{ client.lastName }} · {{ client.city }}, {{ client.country }} · {{ client.email }}</p>
-  } @empty {
-    <p>Aucun profil client enregistré.</p>
+  <h2>Clients inscrits</h2>
+  <form (ngSubmit)="search()">
+    <label>Nom <input name="name" [(ngModel)]="name" /></label>
+    <button [disabled]="busy">Rechercher</button>
+  </form>
+  @for (client of clients; track client.userId) {
+    <p>{{ client.firstName }} {{ client.lastName }} · {{ client.email }}</p>
   }
 </section>

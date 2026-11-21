@@ -1,19 +1,17 @@
 <p class="kicker">Espace avocat</p>
 <h1>Créer mon compte avocat</h1>
 <section class="sheet panel detail">
-  <p>Renseignez votre adresse e-mail et choisissez un mot de passe avant de configurer votre profil professionnel.</p>
-  <p class="muted">Mode démonstration. L’inscription dure le temps de cet onglet et le mot de passe est effacé à la validation.</p>
   <form #form="ngForm" (ngSubmit)="register(form)">
     <label>
       Adresse e-mail
-      <input type="email" name="email" autocomplete="email" [(ngModel)]="email"
+      <input type="email" name="email" autocomplete="email" [(ngModel)]="profile.email"
              required email maxlength="320" />
     </label>
     <div class="fields">
       <label>
         Mot de passe (8 caractères minimum)
         <input type="password" name="password" autocomplete="new-password"
-               [(ngModel)]="password" required minlength="8" />
+               [(ngModel)]="password" required minlength="12" maxlength="128" />
       </label>
       <label>
         Confirmer le mot de passe
@@ -21,6 +19,22 @@
                [(ngModel)]="confirmation" required />
       </label>
     </div>
+    <div class="fields">
+      <label>Prénom <input name="firstName" [(ngModel)]="profile.firstName" required maxlength="120" /></label>
+      <label>Nom <input name="lastName" [(ngModel)]="profile.lastName" required maxlength="120" /></label>
+      <label>Pays <input name="country" [(ngModel)]="profile.country" required maxlength="120" /></label>
+      <label>Ville <input name="city" [(ngModel)]="profile.city" required maxlength="120" /></label>
+      <label>Téléphone <input name="phone" type="tel" [(ngModel)]="profile.phone" required maxlength="32" /></label>
+      <label>Spécialité
+        <select name="specialty" [(ngModel)]="profile.specialty" required>
+          <option value="">Choisir</option>
+          @for (choice of choices; track choice[0]) {
+            <option [value]="choice[0]">{{ choice[1] }}</option>
+          }
+        </select>
+      </label>
+    </div>
+    @if (error) { <p role="alert">{{ error }}</p> }
     @if (form.submitted) {
       @if (form.invalid) {
         <p role="alert">Vérifiez l’adresse e-mail et les champs de mot de passe.</p>
@@ -28,6 +42,6 @@
         <p role="alert">Les mots de passe doivent correspondre.</p>
       }
     }
-    <button type="submit">Créer mon compte de démonstration</button>
+    <button type="submit" [disabled]="busy">Créer mon compte</button>
   </form>
 </section>

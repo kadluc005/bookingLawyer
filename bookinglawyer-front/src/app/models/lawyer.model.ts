@@ -6,7 +6,7 @@ export interface Lawyer {
   last: string;
   city: string;
   country: string;
-  years: number;
+  years: number | null;
   specialty: Specialty;
   bio: string;
 }

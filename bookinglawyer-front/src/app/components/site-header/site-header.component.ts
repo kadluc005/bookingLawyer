@@ -1,5 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import { DossierService } from "../../services/dossier.service";
 import { SessionService } from "../../services/session.service";
 
 @Component({
@@ -11,7 +12,10 @@ export class SiteHeaderComponent {
   readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
+  private readonly dossier = inject(DossierService);
+
   signOut() {
+    this.dossier.clear();
     this.session.end();
     void this.router.navigateByUrl("/");
   }

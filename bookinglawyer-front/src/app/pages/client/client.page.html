@@ -1,5 +1,5 @@
 <h1>{{ registering ? 'Créer mon compte client' : 'Mon profil client' }}</h1>
-<form class="sheet panel detail" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false; duplicateEmail = false">
+<form class="sheet panel detail" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false">
   <div class="fields">
     <label>Prénom <input name="firstName" [(ngModel)]="profile.firstName" required maxlength="120" /></label>
     <label>Nom <input name="lastName" [(ngModel)]="profile.lastName" required maxlength="120" /></label>
@@ -9,12 +9,12 @@
     <label>Adresse e-mail <input type="email" name="email" [(ngModel)]="profile.email" [readOnly]="!registering" required email maxlength="320" /></label>
     @if (registering) {
       <label>Mot de passe (8 caractères minimum)
-        <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required minlength="8" />
+        <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required minlength="12" maxlength="128" />
       </label>
     }
   </div>
   @if (form.submitted && form.invalid) { <p role="alert">Vérifiez les champs indiqués.</p> }
-  @if (duplicateEmail) { <p role="alert">Cette adresse est déjà enregistrée dans la démonstration.</p> }
-  @if (saved) { <p role="status">Profil enregistré dans cet onglet.</p> }
-  <button type="submit">{{ registering ? 'Créer mon compte de démonstration' : 'Enregistrer' }}</button>
+  @if (error) { <p role="alert">{{ error }}</p> }
+  @if (saved) { <p role="status">Profil enregistré.</p> }
+  <button [disabled]="busy" type="submit">{{ registering ? 'Créer mon compte' : 'Enregistrer' }}</button>
 </form>

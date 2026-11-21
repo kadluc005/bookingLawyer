@@ -10,8 +10,7 @@
         <section class="sheet panel">
           <h2>Mode de paiement</h2>
           <p>
-            Choisissez le mode de règlement à associer à votre dossier de
-            démonstration.
+            Choisissez le mode de règlement pour créer votre cotisation.
           </p>
           @for (m of methods; track m[0]) {
             <label class="option"
@@ -25,14 +24,15 @@
             >
           }
           <button
-            [disabled]="!selected"
-            (click)="d.method = selected; saved = true"
+            [disabled]="!selected || busy"
+            (click)="save()"
           >
             Enregistrer la cotisation
           </button>
+          @if (error) { <p role="alert">{{ error }}</p> }
           @if (saved) {
             <p role="status">
-              Cotisation de démonstration enregistrée · En attente de paiement.
+              Cotisation enregistrée · En attente de paiement.
             </p>
           }
         </section>

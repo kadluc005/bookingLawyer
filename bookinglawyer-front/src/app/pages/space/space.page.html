@@ -1,5 +1,6 @@
 <p class="kicker">Espace avocat</p>
     <h1>Mon dossier</h1>
+    @if (error) { <p role="alert">{{ error }}</p> }
     @if (d.confirmed) {
       <div class="layout">
         <aside class="sheet panel">
@@ -11,13 +12,11 @@
           <h2>Suivi de l’inscription</h2>
           <dl>
             <dt>Informations</dt>
-            <dd>Confirmées dans cet onglet</dd>
+            <dd>Profil enregistré</dd>
             <dt>Cotisation annuelle</dt>
             <dd>{{ d.method ? 'En attente de paiement' : 'À créer' }}</dd>
             <dt>Validation administrative</dt>
             <dd>{{ reviewLabel }}</dd>
-            <dt>Visibilité publique</dt>
-            <dd>Profil privé</dd>
           </dl>
           <a class="button" routerLink="/cotisation"
             >Consulter ma cotisation →</a

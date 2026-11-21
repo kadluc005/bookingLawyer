@@ -1,32 +1,37 @@
 import { Component, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { DossierService } from "../../services/dossier.service";
-import { ClientService } from "../../services/client.service";
-import { Role, SessionService } from "../../services/session.service";
+import { errorMessage } from "../../services/api.service";
+import { SessionService } from "../../services/session.service";
 
 @Component({
-  imports: [RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: "./access.page.html",
 })
 export class AccessPage {
   private readonly session = inject(SessionService);
-  private readonly dossier = inject(DossierService);
-  readonly clients = inject(ClientService).clients;
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  email = "";
+  password = "";
+  busy = false;
+  error = "";
 
-  enter(role: Role, clientEmail?: string) {
-    if (role === "lawyer" && !this.dossier.accountEmail) {
-      void this.router.navigateByUrl("/inscription");
-      return;
+  async enter() {
+    this.busy = true;
+    this.error = "";
+    try {
+      const user = await this.session.signIn(this.email, this.password);
+      const lawyerId = this.route.snapshot.queryParamMap.get("avocat");
+      if (user.role === "client" && lawyerId) {
+        await this.router.navigate(["/avocats", lawyerId]);
+      } else {
+        await this.router.navigateByUrl(user.role === "admin" ? "/administration" : user.role === "lawyer" ? "/espace" : "/annuaire");
+      }
+    } catch (error) {
+      this.error = errorMessage(error);
+    } finally {
+      this.busy = false;
     }
-    const email = role === "lawyer" ? this.dossier.accountEmail : clientEmail ?? role + "@example.test";
-    this.session.start(role, email);
-    const lawyerId = this.route.snapshot.queryParamMap.get("avocat");
-    if (role === "client" && lawyerId) {
-      void this.router.navigate(["/avocats", lawyerId]);
-      return;
-    }
-    void this.router.navigateByUrl(role === "admin" ? "/administration" : role === "lawyer" ? "/espace" : "/annuaire");
   }
 }

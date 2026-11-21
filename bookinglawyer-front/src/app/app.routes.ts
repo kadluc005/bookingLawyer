@@ -1,7 +1,6 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router, Routes } from "@angular/router";
 import { RegisterPage } from "./pages/register/register.page";
-import { DossierService } from "./services/dossier.service";
 import { DirectoryPage } from "./pages/directory/directory.page";
 import { DetailPage } from "./pages/lawyer-detail/lawyer-detail.page";
 import { EnrollPage } from "./pages/enroll/enroll.page";
@@ -41,19 +40,12 @@ export const routes: Routes = [
     path: "inscription",
     pathMatch: "full",
     component: RegisterPage,
-    canActivate: [() =>
-      !(inject(SessionService).account()?.role === "lawyer" && inject(DossierService).accountEmail) ||
-      inject(Router).parseUrl("/inscription/profil")
-    ],
     title: "Créer un compte avocat | BookingLawyer",
   },
   {
     path: "inscription/profil",
     component: EnrollPage,
-    canActivate: [forRole("lawyer"), () =>
-      !!inject(DossierService).accountEmail ||
-      inject(Router).parseUrl("/inscription")
-    ],
+    canActivate: [forRole("lawyer")],
     title: "Configurer mon profil | BookingLawyer",
   },
   {

@@ -8,6 +8,10 @@
   </div>
   <div class="architecture" aria-hidden="true"></div>
 </section>
+@if (session.account()?.role !== 'client') {
+  <p>Connectez-vous comme client pour consulter l’annuaire.</p>
+  <a routerLink="/connexion">Se connecter</a>
+} @else {
 <div class="filter sheet">
   <label
     >Nom ou localisation<input
@@ -28,13 +32,14 @@
   <div class="section-head">
     <div>
       <h2>Les professionnels</h2>
-      <small>Profils de démonstration</small>
     </div>
     <span aria-live="polite"
       >{{results.length}} résultat{{results.length > 1 ? 's' : ''}}</span
     >
   </div>
-  @if (results.length) {
+  @if (error) { <p role="alert">{{ error }}</p> }
+  @else if (busy) { <p role="status">Chargement…</p> }
+  @else if (results.length) {
   <div class="grid">
     @for (p of results; track p.id) {
     <app-lawyer-card [lawyer]="p" />
@@ -47,3 +52,5 @@
     </div>
   }
 </section>
+
+}

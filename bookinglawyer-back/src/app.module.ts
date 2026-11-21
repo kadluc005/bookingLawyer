@@ -9,6 +9,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ControllersModule } from './controllers/controllers.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { FileMailTransport, MailModule } from '@nestjs/mail';
 
 @Module({
   imports: [
@@ -38,6 +39,10 @@ import { DatabaseModule } from './database/database.module.js';
     DatabaseModule,
     AuthModule,
     ControllersModule,
+    MailModule.forRoot({
+      transport: new FileMailTransport({ directory: './emails' }),
+      from: 'BookingLawyer <lucubuntu10@gmail.com>',
+    }),
   ],
   controllers: [AppController],
   providers: [

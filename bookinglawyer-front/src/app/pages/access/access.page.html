@@ -1,20 +1,13 @@
-<h1>Accéder à BookingLawyer</h1>
-<p class="muted">Choisissez un espace pour essayer le parcours dans cet onglet.</p>
-<div class="layout">
-  <section class="sheet panel">
-    <h2>Client</h2>
-    <p>Recherchez un avocat et consultez ses coordonnées.</p>
-    <button type="button" (click)="enter('client')">Essayer comme client</button>
-    <p><a routerLink="/inscription/client">Créer un compte client</a></p>
-    @for (client of clients(); track client.email) {
-      <p><button class="secondary" type="button" (click)="enter('client', client.email)">Reprendre comme {{ client.firstName }} {{ client.lastName }}</button></p>
-    }
-  </section>
-  <section class="sheet panel">
-    <h2>Avocat</h2>
-    <p>Configurez votre profil, suivez votre dossier et choisissez un mode de cotisation.</p>
-    <a class="button" routerLink="/inscription">Créer un compte avocat</a>
-    <p><button class="secondary" type="button" (click)="enter('lawyer')">Reprendre mon dossier</button></p>
-  </section>
-</div>
-<p><button class="secondary" type="button" (click)="enter('admin')">Essayer l’administration</button></p>
+<h1>Connexion</h1>
+<form class="sheet panel detail" #form="ngForm" (ngSubmit)="enter()">
+  <label>Adresse e-mail
+    <input type="email" name="email" [(ngModel)]="email" required email autocomplete="username" />
+  </label>
+  <label>Mot de passe
+    <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+  </label>
+  @if (error) { <p role="alert">{{ error }}</p> }
+  <button [disabled]="form.invalid || busy">Se connecter</button>
+  <p><a routerLink="/inscription/client">Créer un compte client</a></p>
+  <p><a routerLink="/inscription">Créer un compte avocat</a></p>
+</form>

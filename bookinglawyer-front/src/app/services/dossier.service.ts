@@ -1,4 +1,6 @@
 import { Injectable } from "@angular/core";
+import { SessionService } from "./session.service";
+import type { ReviewStatus } from "./activity.service";
 import { Profile } from "../models/profile.model";
 
 const blank = (): Profile => ({
@@ -22,17 +24,16 @@ export class DossierService {
   documents: File[] = [];
   photo?: File;
   confirmed = false;
+  reviewStatus: ReviewStatus = "pending_review";
   method = "";
 
-  get reviewId() {
-    return "dossier:" + this.accountEmail;
-  }
-
-  startDemoRegistration(email: string) {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (this.accountEmail !== normalizedEmail) this.clear();
-    this.accountEmail = normalizedEmail;
-    this.profile.email = this.accountEmail;
+  async load(session: SessionService) {
+    const email = session.account()?.email ?? "";
+    if (this.accountEmail !== email) this.clear();
+    const profile = await session.request<Partial<Profile> & { reviewStatus: ReviewStatus }>("/lawyers/me");
+    this.accountEmail = email;
+    this.reviewStatus = profile.reviewStatus;
+    this.profile = { ...blank(), ...profile, email, officeStreet: profile.officeStreet ?? "", officeNumber: profile.officeNumber ?? "", cvText: profile.cvText ?? "", websiteUrl: profile.websiteUrl ?? "" };
   }
 
   clear() {
@@ -41,6 +42,7 @@ export class DossierService {
     this.documents = [];
     this.photo = undefined;
     this.confirmed = false;
+    this.reviewStatus = "pending_review";
     this.method = "";
   }
 }
