@@ -1,0 +1,57 @@
+:host { display: block; padding-bottom: 18px; }
+.back-link { display: inline-flex; align-items: center; gap: 9px; margin: 4px 0 24px; color: #49647e; text-decoration: none; font-size: .9rem; font-weight: 600; }
+.back-link:hover { text-decoration: underline; }
+.lawyer-profile { overflow: hidden; border: 1px solid #dce5ee; border-radius: 10px; background: #fff; box-shadow: 0 16px 48px #1839560b; }
+.profile-banner { height: 122px; background: linear-gradient(110deg, #102b4b, #214c72); }
+.profile-heading { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 24px; padding: 0 42px 30px; border-bottom: 1px solid #e7edf3; }
+.profile-photo { flex: 0 0 126px; width: 126px; height: 126px; display: grid; place-items: center; overflow: hidden; margin-top: -49px; border: 5px solid white; border-radius: 12px; background: #e5edf5; }
+.profile-identity { flex: 1 1 300px; min-width: 0; padding-top: 18px; }
+.profile-label, .section-label { margin: 0 0 9px; color: #678198; font-size: .68rem; font-weight: 750; letter-spacing: .13em; }
+.profile-identity h1 { margin: 0 0 8px; color: #102b4b; font-size: clamp(1.9rem, 3vw, 2.8rem); overflow-wrap: anywhere; }
+.profile-location { margin: 0; color: #718499; font-size: .92rem; }
+.specialty { margin-top: 18px; padding: 8px 13px; border-radius: 4px; background: #eaf2f8; color: #2c5e81; font-size: .78rem; font-weight: 700; }
+.profile-content { display: grid; grid-template-columns: minmax(0, 1fr) 315px; gap: clamp(30px, 5vw, 64px); align-items: start; padding: 42px; }
+.content-section + .content-section { margin-top: 42px; padding-top: 34px; border-top: 1px solid #e6edf3; }
+.content-section h2, .contact-card h2 { margin-bottom: 15px; color: #102b4b; font-size: 1.35rem; letter-spacing: -.02em; }
+.profile-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 26px; }
+.profile-facts span, .profile-facts strong { display: block; }
+.profile-facts span { margin-bottom: 5px; color: #8191a0; font-size: .8rem; }
+.profile-facts strong { color: #2a4057; font-size: .93rem; overflow-wrap: anywhere; }
+.office { margin-top: 25px; }
+.office h3 { margin-bottom: 6px; color: #2a4057; font-size: .9rem; }
+.office p, .biography { color: #617488; line-height: 1.7; }
+.website-link { color: #285d85; font-weight: 650; overflow-wrap: anywhere; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.document-count { white-space: nowrap; color: #718499; font-size: .8rem; }
+.empty-documents { margin: 16px 0 0; padding: 21px; border: 1px dashed #d4dfe9; border-radius: 6px; color: #6c7f90; background: #f8fafc; font-size: .9rem; }
+.document-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #e8eef3; color: #233c55; text-decoration: none; }
+.document-icon { flex: 0 0 36px; display: grid; place-items: center; height: 36px; border-radius: 5px; background: #edf4f9; color: #2f658c; }
+.document-name { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: .9rem; font-weight: 650; }
+.document-action { color: #3f7096; font-size: .8rem; font-weight: 700; }
+.contact-card { padding: 25px; border: 1px solid #dfe8f0; border-radius: 8px; background: #f8fafc; }
+.contact-card > p:not(.section-label) { color: #708398; font-size: .88rem; line-height: 1.65; }
+.contact-options { display: grid; gap: 10px; margin-top: 22px; }
+.contact-button { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 11px; border: 1px solid #123b5e; border-radius: 5px; font: inherit; font-size: .88rem; font-weight: 700; text-align: center; text-decoration: none; overflow-wrap: anywhere; }
+.contact-button span:last-child { min-width: 0; }
+.contact-primary { color: white; background: #123b5e; }
+.contact-secondary { color: #123b5e; background: white; }
+.chat-button { color: #708397; border-color: #d9e2ea; background: #eef2f6; opacity: 1; }
+.chat-note { margin: -2px 0 0; color: #8191a0; font-size: .75rem; text-align: center; }
+.contact-error { color: #a43529 !important; overflow-wrap: anywhere; }
+.state-message { padding: 28px; border: 1px solid #dce5ee; border-radius: 8px; background: #fff; }
+.state-message h1 { font-size: 1.8rem; }
+@media (max-width: 800px) {
+  .profile-content { grid-template-columns: 1fr; gap: 32px; padding: 30px; }
+  .contact-card { max-width: none; }
+}
+@media (max-width: 560px) {
+  .profile-banner { height: 90px; }
+  .profile-heading { gap: 12px; padding: 0 20px 24px; }
+  .profile-photo { flex-basis: 100px; width: 100px; height: 100px; margin-top: -38px; }
+  .profile-identity { flex-basis: 100%; padding-top: 2px; }
+  .specialty { margin-top: 2px; }
+  .profile-content { padding: 26px 20px; }
+  .profile-facts { grid-template-columns: 1fr; gap: 16px; }
+  .contact-card { padding: 20px; }
+  .document-action { font-size: .72rem; }
+}

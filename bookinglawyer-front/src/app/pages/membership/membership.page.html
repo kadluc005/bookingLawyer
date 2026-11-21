@@ -1,43 +1,25 @@
 <a class="back" routerLink="/espace">← Mon dossier</a>
-    <h1>Cotisation annuelle</h1>
-    @if (d.confirmed) {
-      <div class="layout">
-        <aside class="sheet panel">
-          <p class="kicker">Adhésion avocat</p>
-          <h2>100 € <small>/ an</small></h2>
-          <p>Publication après paiement et validation du dossier.</p>
-        </aside>
-        <section class="sheet panel">
-          <h2>Mode de paiement</h2>
-          <p>
-            Choisissez le mode de règlement pour créer votre cotisation.
-          </p>
-          @for (m of methods; track m[0]) {
-            <label class="option"
-              ><input
-                type="radio"
-                name="method"
-                [value]="m[0]"
-                [(ngModel)]="selected"
-                (ngModelChange)="saved = false"
-              />{{ m[1] }}</label
-            >
-          }
-          <button
-            [disabled]="!selected || busy"
-            (click)="save()"
-          >
-            Enregistrer la cotisation
-          </button>
-          @if (error) { <p role="alert">{{ error }}</p> }
-          @if (saved) {
-            <p role="status">
-              Cotisation enregistrée · En attente de paiement.
-            </p>
-          }
-        </section>
-      </div>
+<h1>Cotisation annuelle</h1>
+@if (error) { <p role="alert">{{ error }}</p> }
+@if (loading) {
+  <p role="status">Chargement…</p>
+} @else if (!loadFailed) {
+  <section class="sheet panel">
+    @if (membership?.status === 'active') {
+      <h2>Cotisation active</h2>
+      <p>Du {{ membership?.startsAt | date:'dd/MM/yyyy':'+0000' }} au {{ membership?.endsAt | date:'dd/MM/yyyy':'+0000' }}.</p>
+      <p>Ton profil apparaît dans l’annuaire après validation administrative.</p>
+    } @else if (dossier.confirmed || membership) {
+      @if (membership?.status === 'expired') {
+        <p>Ta cotisation est arrivée à échéance le {{ membership?.endsAt | date:'dd/MM/yyyy':'+0000' }}.</p>
+      }
+      <p>La cotisation démarre dès son enregistrement et dure un an. Aucun paiement ne sera prélevé.</p>
+      <button type="button" [disabled]="busy" (click)="save()">
+        {{ membership?.status === 'expired' ? 'Renouveler la cotisation' : 'Enregistrer la cotisation' }}
+      </button>
     } @else {
-      <p>Confirmez d’abord votre profil pour accéder à la cotisation.</p>
+      <p>Confirme d’abord ton profil pour enregistrer ta cotisation.</p>
       <a class="button" routerLink="/inscription/profil">Configurer mon profil</a>
     }
+  </section>
+}

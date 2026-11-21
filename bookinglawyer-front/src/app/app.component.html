@@ -1,6 +1,24 @@
-<app-site-header />
-<main><router-outlet /></main>
+@if (!router.url.startsWith('/administration')) {
+  <app-site-header />
+}
+<main [class.admin-main]="router.url.startsWith('/administration')"><router-outlet /></main>
+@if (!router.url.startsWith('/administration')) {
 <footer>
-  <span>BookingLawyer</span>
-  Annuaire juridique · Démonstration
+  <div class="footer-content">
+    <div class="footer-brand">
+      <span>BookingLawyer</span>
+      <p>Trouvez le professionnel du droit qui vous correspond.</p>
+    </div>
+    <nav aria-label="Navigation de pied de page">
+      <a routerLink="/annuaire">Annuaire</a>
+      <a routerLink="/news">News</a>
+      <a routerLink="/hotnews">Hotnews</a>
+      <a routerLink="/pricing">Pricing</a>
+      <a routerLink="/a-propos">À propos</a>
+      <a routerLink="/pro-bono">Pro bono</a>
+      <a routerLink="/faq">FAQ</a>
+      <a routerLink="/contact">Contactez-nous</a>
+    </nav>
+  </div>
 </footer>
+}

@@ -15,7 +15,11 @@ import { ClientsService } from '../services/clients.service.js';
 import { ContactEventsService } from '../services/contact-events.service.js';
 import { LawyersService } from '../services/lawyers.service.js';
 import type { AuthenticatedUser } from '../services/users.service.js';
-import { ClientSearchQueryDto, ReviewLawyerDto } from './controllers.dto.js';
+import {
+  ClientSearchQueryDto,
+  PaginationQueryDto,
+  ReviewLawyerDto,
+} from './controllers.dto.js';
 
 @Controller('admin')
 @Can(RolePolicy, 'admin')
@@ -30,6 +34,16 @@ export class AdminController {
   @Get('clients')
   searchClients(@Query() query: ClientSearchQueryDto) {
     return this.clientsService.search(query);
+  }
+
+  @Get('lawyers')
+  listLawyers(@Query() query: PaginationQueryDto) {
+    return this.lawyersService.listLawyersForAdmin(query.limit, query.offset);
+  }
+
+  @Get('lawyers/memberships')
+  listLawyerMemberships(@Query() query: PaginationQueryDto) {
+    return this.lawyersService.listMembershipsForAdmin(query.limit, query.offset);
   }
 
   @Patch('lawyers/:lawyerId/review')
@@ -51,6 +65,11 @@ export class AdminController {
     });
 
     return profile;
+  }
+
+  @Get('lawyers/:lawyerId')
+  findLawyer(@Param('lawyerId', ParseUUIDPipe) lawyerUserId: string) {
+    return this.lawyersService.findLawyerForAdmin(lawyerUserId);
   }
 
   @Get('lawyers/:lawyerId/contact-events')

@@ -1,39 +1,80 @@
-<p class="kicker">Espace avocat</p>
-    <h1>Mon dossier</h1>
-    @if (error) { <p role="alert">{{ error }}</p> }
-    @if (d.confirmed) {
-      <div class="layout">
-        <aside class="sheet panel">
-          <p class="kicker">Profil privé</p>
-          <h2>Me {{ d.profile.firstName }} {{ d.profile.lastName }}</h2>
-          <p>{{ d.profile.city }}, {{ d.profile.country }}</p>
-        </aside>
-        <section class="sheet panel">
-          <h2>Suivi de l’inscription</h2>
-          <dl>
-            <dt>Informations</dt>
-            <dd>Profil enregistré</dd>
-            <dt>Cotisation annuelle</dt>
-            <dd>{{ d.method ? 'En attente de paiement' : 'À créer' }}</dd>
-            <dt>Validation administrative</dt>
-            <dd>{{ reviewLabel }}</dd>
-          </dl>
-          <a class="button" routerLink="/cotisation"
-            >Consulter ma cotisation →</a
-          >
-        </section>
-      </div>
-    } @else {
-      <section class="sheet panel">
-        <h2>Commencer mon inscription</h2>
-        <p>
-          Préparez votre CV et les coordonnées de votre cabinet pour constituer
-          votre dossier.
-        </p>
-        @if (d.accountEmail) {
-          <a class="button" routerLink="/inscription/profil">Continuer mon profil →</a>
-        } @else {
-          <a class="button" routerLink="/inscription">Créer mon compte avocat →</a>
+<h1>Tableau de bord avocat</h1>
+@if (error) { <p role="alert">{{ error }}</p> }
+@if (loading) {
+  <p role="status">Chargement du profil et de la cotisation…</p>
+} @else if (!error) {
+  <div class="grid overview">
+    <section class="sheet panel">
+      <h2>Mon profil</h2>
+      <p>Me {{ dossier.profile.firstName }} {{ dossier.profile.lastName }}</p>
+      <p>{{ dossier.profile.city }}, {{ dossier.profile.country }}</p>
+      <a routerLink="/inscription/profil">Modifier mon profil</a>
+    </section>
+    <section class="sheet panel">
+      <h2>Cotisation annuelle</h2>
+      <p>
+        @switch (membership?.status) {
+          @case ('active') { Active jusqu’au {{ membership?.endsAt | date:'dd/MM/yyyy':'+0000' }} }
+          @case ('expired') { Expirée }
+          @case ('cancelled') { Annulée }
+          @case ('pending_payment') { En attente }
+          @default { À enregistrer }
         }
-      </section>
-    }
+      </p>
+      <a routerLink="/cotisation">Gérer ma cotisation</a>
+    </section>
+    <section class="sheet panel">
+      <h2>Validation administrative</h2>
+      <p>{{ reviewLabel }}</p>
+    </section>
+  </div>
+}
+<section class="sheet panel contacts" aria-labelledby="contact-title">
+  <div class="contact-heading">
+    <div>
+      <h2 id="contact-title">Clients ayant demandé vos coordonnées</h2>
+      <p>Les demandes sont comptées lorsque le client affiche votre e-mail ou votre téléphone.</p>
+    </div>
+    <button type="button" class="secondary" [disabled]="contactsLoading" (click)="loadContacts()">
+      Actualiser
+    </button>
+  </div>
+  @if (contactsError) { <p role="alert">{{ contactsError }}</p> }
+  @if (contactsLoading) { <p role="status">Chargement des demandes…</p> }
+  @if (clients.length) {
+    <div class="contact-table">
+      <table aria-labelledby="contact-title">
+        <thead>
+          <tr>
+            <th scope="col">Client</th>
+            <th scope="col">Dernière demande</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Téléphone</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients; track client.clientId) {
+            <tr>
+              <th scope="row">{{ client.firstName }} {{ client.lastName }}</th>
+              <td>{{ client.lastContactAt | date:'dd/MM/yyyy HH:mm':'+0000' }}</td>
+              <td>{{ client.emailRequests }}</td>
+              <td>{{ client.phoneRequests }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (!contactsLoading && !contactsError) {
+    <p>Aucune demande de coordonnées pour le moment.</p>
+  }
+  @if (contactOffset > 0 || hasMoreContacts) {
+    <div class="actions">
+      <button type="button" class="secondary" [disabled]="contactsLoading || !contactOffset" (click)="loadContacts(contactOffset - pageSize)">
+        Page précédente
+      </button>
+      <button type="button" class="secondary" [disabled]="contactsLoading || !hasMoreContacts" (click)="loadContacts(contactOffset + pageSize)">
+        Page suivante
+      </button>
+    </div>
+  }
+</section>

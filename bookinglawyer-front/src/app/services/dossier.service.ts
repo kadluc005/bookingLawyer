@@ -3,6 +3,12 @@ import { SessionService } from "./session.service";
 import type { ReviewStatus } from "./activity.service";
 import { Profile } from "../models/profile.model";
 
+export interface Membership {
+  status: "pending_payment" | "active" | "expired" | "cancelled";
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
 const blank = (): Profile => ({
   firstName: "",
   lastName: "",
@@ -25,7 +31,6 @@ export class DossierService {
   photo?: File;
   confirmed = false;
   reviewStatus: ReviewStatus = "pending_review";
-  method = "";
 
   async load(session: SessionService) {
     const email = session.account()?.email ?? "";
@@ -43,6 +48,5 @@ export class DossierService {
     this.photo = undefined;
     this.confirmed = false;
     this.reviewStatus = "pending_review";
-    this.method = "";
   }
 }

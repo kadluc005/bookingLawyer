@@ -1,0 +1,39 @@
+.overview {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
+
+.overview .panel {
+  margin-top: 0;
+}
+
+.contacts {
+  margin-top: 1.5rem;
+}
+
+.contact-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.contact-table {
+  overflow-x: auto;
+  margin-block: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: .75rem;
+  border-bottom: 1px solid #d8e2ec;
+  text-align: left;
+}
+
+thead th {
+  white-space: nowrap;
+}

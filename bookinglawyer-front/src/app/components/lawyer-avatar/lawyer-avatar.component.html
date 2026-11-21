@@ -1,0 +1,5 @@
+@if (photoUrl && !photoError) {
+  <img [src]="photoUrl" [alt]="'Photo de ' + name" (error)="photoError = true" />
+} @else {
+  <span class="person-icon" role="img" aria-label="Photo de profil indisponible"></span>
+}

@@ -1,20 +1,63 @@
 <h1>{{ registering ? 'Créer mon compte client' : 'Mon profil client' }}</h1>
-<form class="sheet panel detail" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false">
-  <div class="fields">
-    <label>Prénom <input name="firstName" [(ngModel)]="profile.firstName" required maxlength="120" /></label>
-    <label>Nom <input name="lastName" [(ngModel)]="profile.lastName" required maxlength="120" /></label>
-    <label>Pays <input name="country" [(ngModel)]="profile.country" required maxlength="120" /></label>
-    <label>Ville <input name="city" [(ngModel)]="profile.city" required maxlength="120" /></label>
-    <label>Téléphone <input type="tel" name="phone" [(ngModel)]="profile.phone" required maxlength="32" /></label>
-    <label>Adresse e-mail <input type="email" name="email" [(ngModel)]="profile.email" [readOnly]="!registering" required email maxlength="320" /></label>
-    @if (registering) {
-      <label>Mot de passe (8 caractères minimum)
-        <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required minlength="12" maxlength="128" />
-      </label>
+
+@if (!registering && loading) {
+  <p class="profile-message" role="status">Chargement de votre profil…</p>
+} @else if (!registering && !loaded) {
+  <section class="sheet profile-message">
+    <p role="alert">{{ error }}</p>
+    <button type="button" class="secondary" (click)="loadProfile()">Réessayer</button>
+  </section>
+} @else if (!registering && !editing) {
+  <section class="client-profile">
+    <div class="profile-header">
+      <div class="profile-person">
+        <div class="profile-avatar" aria-hidden="true">{{ profile.firstName.charAt(0) }}{{ profile.lastName.charAt(0) }}</div>
+        <div>
+          <p class="profile-kicker">ESPACE CLIENT</p>
+          <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+          <p class="profile-location">{{ profile.city }}, {{ profile.country }}</p>
+        </div>
+      </div>
+      <button type="button" (click)="edit()">Modifier mon profil</button>
+    </div>
+    @if (saved) { <p class="saved-message" role="status">Vos modifications ont été enregistrées.</p> }
+    <div class="profile-details">
+      <div class="details-heading"><h3>Informations personnelles</h3><p>Vos coordonnées et vos informations de contact.</p></div>
+      <dl>
+        <div><dt>Prénom</dt><dd>{{ profile.firstName }}</dd></div>
+        <div><dt>Nom</dt><dd>{{ profile.lastName }}</dd></div>
+        <div><dt>Pays</dt><dd>{{ profile.country }}</dd></div>
+        <div><dt>Ville</dt><dd>{{ profile.city }}</dd></div>
+        <div><dt>Téléphone</dt><dd>{{ profile.phone }}</dd></div>
+        <div><dt>Adresse e-mail</dt><dd>{{ profile.email }}</dd></div>
+      </dl>
+    </div>
+  </section>
+} @else {
+  <form class="sheet panel detail edit-form" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false">
+    @if (!registering) {
+      <div class="edit-heading"><h2>Modifier mes informations</h2><p>Actualisez vos coordonnées, puis enregistrez vos modifications.</p></div>
     }
-  </div>
-  @if (form.submitted && form.invalid) { <p role="alert">Vérifiez les champs indiqués.</p> }
-  @if (error) { <p role="alert">{{ error }}</p> }
-  @if (saved) { <p role="status">Profil enregistré.</p> }
-  <button [disabled]="busy" type="submit">{{ registering ? 'Créer mon compte' : 'Enregistrer' }}</button>
-</form>
+    <fieldset [disabled]="busy">
+      <div class="fields">
+        <label>Prénom <input name="firstName" [(ngModel)]="formProfile.firstName" required maxlength="120" autocomplete="given-name" /></label>
+        <label>Nom <input name="lastName" [(ngModel)]="formProfile.lastName" required maxlength="120" autocomplete="family-name" /></label>
+        <label>Pays <input name="country" [(ngModel)]="formProfile.country" required maxlength="120" autocomplete="country-name" /></label>
+        <label>Ville <input name="city" [(ngModel)]="formProfile.city" required maxlength="120" autocomplete="address-level2" /></label>
+        <label>Téléphone <input type="tel" name="phone" [(ngModel)]="formProfile.phone" required maxlength="32" autocomplete="tel" /></label>
+        <label>Adresse e-mail <input type="email" name="email" [(ngModel)]="formProfile.email" [readOnly]="!registering" required email maxlength="320" autocomplete="email" /></label>
+        @if (registering) {
+          <label>Mot de passe (12 caractères minimum)
+            <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required minlength="12" maxlength="128" />
+          </label>
+        }
+      </div>
+      @if (form.submitted && form.invalid) { <p role="alert">Vérifiez les champs indiqués.</p> }
+      @if (error) { <p role="alert">{{ error }}</p> }
+      <div class="form-actions">
+        <button type="submit">{{ busy ? 'Enregistrement…' : registering ? 'Créer mon compte' : 'Enregistrer' }}</button>
+        @if (!registering) { <button type="button" class="secondary" (click)="cancel()">Annuler</button> }
+      </div>
+    </fieldset>
+  </form>
+}

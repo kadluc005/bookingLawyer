@@ -34,6 +34,13 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer()).get('/lawyers').expect(401);
   });
 
+  it('requires authentication for the admin lawyer list and details', async () => {
+    await request(app.getHttpServer()).get('/admin/lawyers').expect(401);
+    await request(app.getHttpServer())
+      .get('/admin/lawyers/00000000-0000-4000-8000-000000000001')
+      .expect(401);
+  });
+
   it('requires authentication for a client profile', () => {
     return request(app.getHttpServer()).get('/clients/me').expect(401);
   });

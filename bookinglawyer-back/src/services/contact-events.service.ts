@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, max, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import {
   clientProfiles,
@@ -49,6 +49,28 @@ export class ContactEventsService {
       .returning();
 
     return contactEvent;
+  }
+
+  async findClientsForLawyer(lawyerUserId: string, limit = 20, offset = 0) {
+    const lastContactAt = max(contactEvents.createdAt);
+    const rows = await this.db
+      .select({
+        clientId: clientProfiles.userId,
+        firstName: clientProfiles.firstName,
+        lastName: clientProfiles.lastName,
+        lastContactAt,
+        emailRequests: sql`count(*) filter (where ${contactEvents.channel} = 'email')`.mapWith(Number),
+        phoneRequests: sql`count(*) filter (where ${contactEvents.channel} = 'phone')`.mapWith(Number),
+      })
+      .from(contactEvents)
+      .innerJoin(clientProfiles, eq(clientProfiles.userId, contactEvents.clientUserId))
+      .where(eq(contactEvents.lawyerUserId, lawyerUserId))
+      .groupBy(clientProfiles.userId, clientProfiles.firstName, clientProfiles.lastName)
+      .orderBy(desc(lastContactAt), asc(clientProfiles.userId))
+      .limit(limit + 1)
+      .offset(offset);
+
+    return { clients: rows.slice(0, limit), hasMore: rows.length > limit };
   }
 
   findForLawyer(lawyerUserId: string, limit = 100) {

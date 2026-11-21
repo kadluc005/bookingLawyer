@@ -5,13 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { and, asc, eq, exists, gt, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, exists, gt, sql } from 'drizzle-orm';
 import type { SQL } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import {
+  lawyerDocuments,
   lawyerProfiles,
   memberships,
-  payments,
   users,
   type NewLawyerProfile,
   type NewUser,
@@ -144,6 +144,103 @@ export class LawyersService {
     return profile;
   }
 
+  async listLawyersForAdmin(limit = 20, offset = 0) {
+    const [rows, counts] = await Promise.all([
+      this.db
+        .select({
+          lawyerId: lawyerProfiles.userId,
+          firstName: lawyerProfiles.firstName,
+          lastName: lawyerProfiles.lastName,
+          email: users.email,
+          city: lawyerProfiles.city,
+          country: lawyerProfiles.country,
+          specialty: lawyerProfiles.specialty,
+          reviewStatus: lawyerProfiles.reviewStatus,
+          accountStatus: users.status,
+        })
+        .from(lawyerProfiles)
+        .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+        .where(eq(users.role, 'lawyer'))
+        .orderBy(asc(lawyerProfiles.lastName), asc(lawyerProfiles.firstName), asc(lawyerProfiles.userId))
+        .limit(limit)
+        .offset(offset),
+      this.db
+        .select({
+          total: sql<number>`count(*)::int`,
+          pending: sql<number>`count(*) filter (where ${lawyerProfiles.reviewStatus} = 'pending_review')::int`,
+        })
+        .from(lawyerProfiles)
+        .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+        .where(eq(users.role, 'lawyer')),
+    ]);
+    return { lawyers: rows, total: counts[0].total, pending: counts[0].pending };
+  }
+
+  async findLawyerForAdmin(userId: string) {
+    const [lawyer] = await this.db
+      .select({
+        profile: lawyerProfiles,
+        email: users.email,
+        accountStatus: users.status,
+      })
+      .from(lawyerProfiles)
+      .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+      .where(and(eq(lawyerProfiles.userId, userId), eq(users.role, 'lawyer')));
+    if (!lawyer) throw new NotFoundException('Lawyer profile not found.');
+    const membershipHistory = await this.db
+      .select({
+        id: memberships.id,
+        status: sql<typeof memberships.$inferSelect.status>`
+          case when ${memberships.status} = 'active' and ${memberships.endsAt} <= now()
+            then 'expired' else ${memberships.status} end
+        `,
+        amount: memberships.amount,
+        currency: memberships.currency,
+        startsAt: memberships.startsAt,
+        endsAt: memberships.endsAt,
+        createdAt: memberships.createdAt,
+      })
+      .from(memberships)
+      .where(eq(memberships.lawyerUserId, userId))
+      .orderBy(desc(memberships.createdAt), desc(memberships.id));
+    const documents = await this.db
+      .select({
+        id: lawyerDocuments.id,
+        originalName: lawyerDocuments.originalName,
+        mimeType: lawyerDocuments.mimeType,
+        sizeBytes: lawyerDocuments.sizeBytes,
+        createdAt: lawyerDocuments.createdAt,
+      })
+      .from(lawyerDocuments)
+      .where(eq(lawyerDocuments.lawyerUserId, userId))
+      .orderBy(asc(lawyerDocuments.documentNumber));
+    return { ...lawyer, memberships: membershipHistory, documents };
+  }
+
+  listMembershipsForAdmin(limit = 20, offset = 0) {
+    return this.db
+      .select({
+        membershipId: memberships.id,
+        lawyerId: lawyerProfiles.userId,
+        firstName: lawyerProfiles.firstName,
+        lastName: lawyerProfiles.lastName,
+        email: users.email,
+        reviewStatus: lawyerProfiles.reviewStatus,
+        membershipStatus: sql<typeof memberships.$inferSelect.status>`
+          case when ${memberships.status} = 'active' and ${memberships.endsAt} <= now()
+            then 'expired' else ${memberships.status} end
+        `,
+        createdAt: memberships.createdAt,
+      })
+      .from(memberships)
+      .innerJoin(lawyerProfiles, eq(lawyerProfiles.userId, memberships.lawyerUserId))
+      .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+      .where(eq(users.role, 'lawyer'))
+      .orderBy(desc(memberships.createdAt), desc(memberships.id))
+      .limit(limit)
+      .offset(offset);
+  }
+
   async findVisibleDirectory(query: LawyerDirectoryQuery = {}) {
     const limit = query.limit ?? 20;
     const offset = query.offset ?? 0;
@@ -157,34 +254,7 @@ export class LawyersService {
       throw new BadRequestException('Offset must be a non-negative integer.');
     }
 
-    const filters: SQL[] = [
-      eq(users.role, 'lawyer'),
-      eq(users.status, 'active'),
-      eq(lawyerProfiles.reviewStatus, 'approved'),
-      exists(
-        this.db
-          .select({ id: memberships.id })
-          .from(memberships)
-          .where(
-            and(
-              eq(memberships.lawyerUserId, lawyerProfiles.userId),
-              eq(memberships.status, 'active'),
-              gt(memberships.endsAt, new Date()),
-              exists(
-                this.db
-                  .select({ id: payments.id })
-                  .from(payments)
-                  .where(
-                    and(
-                      eq(payments.membershipId, memberships.id),
-                      eq(payments.status, 'succeeded'),
-                    ),
-                  ),
-              ),
-            ),
-          ),
-      ),
-    ];
+    const filters = this.visibilityFilters();
 
     if (query.country) {
       filters.push(eq(lawyerProfiles.country, query.country));
@@ -246,32 +316,7 @@ export class LawyersService {
       .where(
         and(
           eq(lawyerProfiles.userId, lawyerUserId),
-          eq(users.role, 'lawyer'),
-          eq(users.status, 'active'),
-          eq(lawyerProfiles.reviewStatus, 'approved'),
-          exists(
-            this.db
-              .select({ id: memberships.id })
-              .from(memberships)
-              .where(
-                and(
-                  eq(memberships.lawyerUserId, lawyerProfiles.userId),
-                  eq(memberships.status, 'active'),
-                  gt(memberships.endsAt, new Date()),
-                  exists(
-                    this.db
-                      .select({ id: payments.id })
-                      .from(payments)
-                      .where(
-                        and(
-                          eq(payments.membershipId, memberships.id),
-                          eq(payments.status, 'succeeded'),
-                        ),
-                      ),
-                  ),
-                ),
-              ),
-          ),
+          ...this.visibilityFilters(),
         ),
       );
 
@@ -280,5 +325,25 @@ export class LawyersService {
     }
 
     return target;
+  }
+
+  private visibilityFilters(): SQL[] {
+    return [
+      eq(users.role, 'lawyer'),
+      eq(users.status, 'active'),
+      eq(lawyerProfiles.reviewStatus, 'approved'),
+      exists(
+        this.db
+          .select({ id: memberships.id })
+          .from(memberships)
+          .where(
+            and(
+              eq(memberships.lawyerUserId, lawyerProfiles.userId),
+              eq(memberships.status, 'active'),
+              gt(memberships.endsAt, new Date()),
+            ),
+          ),
+      ),
+    ];
   }
 }

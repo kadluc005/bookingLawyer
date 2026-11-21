@@ -96,7 +96,6 @@ export class EnrollPage {
   }
   invalidate() {
     this.dossier.confirmed = false;
-    this.dossier.method = "";
   }
   go(step: number) {
     this.step = step;

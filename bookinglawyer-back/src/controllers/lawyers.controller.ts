@@ -18,6 +18,7 @@ import type { AuthenticatedUser } from '../services/users.service.js';
 import {
   ContactClickDto,
   LawyerDirectoryQueryDto,
+  PaginationQueryDto,
   PaymentMethodDto,
   UpdateLawyerProfileDto,
 } from './controllers.dto.js';
@@ -40,11 +41,24 @@ export class LawyerProfileController {
   constructor(
     private readonly lawyersService: LawyersService,
     private readonly auditLogsService: AuditLogsService,
+    private readonly contactEventsService: ContactEventsService,
   ) {}
 
   @Get()
   findMyProfile(@CurrentUser() user: AuthenticatedUser) {
     return this.lawyersService.findProfile(user.id);
+  }
+
+  @Get('contacts')
+  findMyContacts(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.contactEventsService.findClientsForLawyer(
+      user.id,
+      query.limit,
+      query.offset,
+    );
   }
 
   @Patch()
@@ -99,6 +113,11 @@ export class LawyerContactController {
 export class MembershipsController {
   constructor(private readonly membershipsService: MembershipsService) {}
 
+  @Get()
+  findMyMembership(@CurrentUser() user: AuthenticatedUser) {
+    return this.membershipsService.findLatestForLawyer(user.id);
+  }
+
   @Post()
   createAnnualMembership(
     @CurrentUser() user: AuthenticatedUser,
@@ -106,7 +125,7 @@ export class MembershipsController {
   ) {
     return this.membershipsService.createAnnualMembership({
       lawyerUserId: user.id,
-      method: body.method,
+      method: body?.method,
     });
   }
 }

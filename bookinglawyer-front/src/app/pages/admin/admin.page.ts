@@ -1,66 +1,91 @@
-import { DatePipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { AdminLawyer, AdminLawyersService } from "../../services/admin-lawyers.service";
+import { specialties } from "../../models/profile.model";
 import { errorMessage } from "../../services/api.service";
 import { SessionService } from "../../services/session.service";
+import { DossierService } from "../../services/dossier.service";
 
 type Client = { userId: string; firstName: string; lastName: string; email: string };
-type Contact = { id: string; email: string; channel: string; createdAt: string };
-type Audit = { id: string; action: string; createdAt: string };
 
-@Component({ imports: [DatePipe, FormsModule], templateUrl: "./admin.page.html" })
+@Component({
+  imports: [FormsModule, RouterLink],
+  templateUrl: "./admin.page.html",
+  styleUrl: "./admin.page.css",
+})
 export class AdminPage {
-  private readonly session = inject(SessionService);
-  lawyerId = "";
+  readonly session = inject(SessionService);
+  private readonly dossier = inject(DossierService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly lawyersService = inject(AdminLawyersService);
+  readonly specialties = specialties;
+  readonly reviewLabels = {
+    pending_review: "En attente de validation",
+    approved: "Approuvé",
+    rejected: "Rejeté",
+  };
+  readonly pageSize = 20;
+  menuOpen = false;
+  lawyers: AdminLawyer[] = [];
+  totalLawyers: number | null = null;
+  pendingLawyers: number | null = null;
+  lawyersOffset = 0;
+  lawyersBusy = false;
+  lawyersError = "";
   name = "";
+  searchedName = "";
+  offset = 0;
   clients: Client[] = [];
-  contacts: Contact[] = [];
-  audit: Audit[] = [];
-  error = "";
-  notice = "";
-  busy = false;
+  clientError = "";
+  clientsBusy = false;
 
-  async ngOnInit() {
-    await this.search();
+  get showLawyers() {
+    return this.route.snapshot.data["section"] === "lawyers";
   }
 
-  async search() {
-    await this.run(async () => {
-      const query = new URLSearchParams({ name: this.name, limit: "20" });
-      this.clients = await this.session.request<Client[]>("/admin/clients?" + query);
-    });
+  ngOnInit() {
+    void this.search();
+    void this.loadLawyers();
   }
 
-  async review(decision: "approved" | "rejected") {
-    await this.run(async () => {
-      await this.session.request("/admin/lawyers/" + encodeURIComponent(this.lawyerId.trim()) + "/review", "PATCH", { decision });
-      this.notice = "Décision enregistrée.";
-    });
-  }
-
-  async loadActivity() {
-    await this.run(async () => {
-      this.contacts = [];
-      this.audit = [];
-      const id = encodeURIComponent(this.lawyerId.trim());
-      [this.contacts, this.audit] = await Promise.all([
-        this.session.request<Contact[]>("/admin/lawyers/" + id + "/contact-events"),
-        this.session.request<Audit[]>("/admin/audit/lawyer_profile/" + id),
-      ]);
-    });
-  }
-
-  private async run(work: () => Promise<void>) {
-    if (this.busy) return;
-    this.busy = true;
-    this.error = "";
-    this.notice = "";
+  async loadLawyers(offset = 0) {
+    if (this.lawyersBusy) return;
+    this.lawyersBusy = true;
+    this.lawyersError = "";
     try {
-      await work();
+      const result = await this.lawyersService.list(this.pageSize, offset);
+      this.lawyers = result.lawyers;
+      this.totalLawyers = result.total;
+      this.pendingLawyers = result.pending;
+      this.lawyersOffset = offset;
     } catch (error) {
-      this.error = errorMessage(error);
+      this.lawyersError = errorMessage(error);
     } finally {
-      this.busy = false;
+      this.lawyersBusy = false;
     }
+  }
+
+  async search(offset = 0) {
+    if (this.clientsBusy) return;
+    this.clientsBusy = true;
+    this.clientError = "";
+    if (offset === 0) this.searchedName = this.name.trim();
+    try {
+      const query = new URLSearchParams({ name: this.searchedName, limit: String(this.pageSize), offset: String(offset) });
+      this.clients = await this.session.request<Client[]>("/admin/clients?" + query);
+      this.offset = offset;
+    } catch (error) {
+      this.clientError = errorMessage(error);
+    } finally {
+      this.clientsBusy = false;
+    }
+  }
+
+  signOut() {
+    this.dossier.clear();
+    this.session.end();
+    void this.router.navigateByUrl("/");
   }
 }

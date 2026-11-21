@@ -1,0 +1,84 @@
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="sidebar-top"><a class="admin-brand" routerLink="/"><span>§</span> BookingLawyer</a><button class="admin-menu-toggle" type="button" aria-controls="admin-navigation" [attr.aria-expanded]="menuOpen" (click)="menuOpen = !menuOpen"><span aria-hidden="true">{{ menuOpen ? '✕' : '☰' }}</span> Menu</button></div>
+    <p class="sidebar-label">ESPACE ADMINISTRATION</p>
+    <nav id="admin-navigation" [class.is-open]="menuOpen" aria-label="Navigation administrateur">
+      <a routerLink="/administration">◫ <span>Vue d’ensemble</span></a>
+      <a class="current" routerLink="/administration/avocats">♙ <span>Avocats</span></a>
+      <a routerLink="/administration" fragment="clients">♧ <span>Clients</span></a>
+      <a routerLink="/annuaire">↗ <span>Voir le site</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span>{{ session.account()?.email }}</span><button type="button" (click)="signOut()">Déconnexion</button></div>
+  </aside>
+  <div class="workspace">
+    <a class="back-link" routerLink="/administration/avocats">← Retour aux avocats</a>
+    @if (loading && !detail) { <p role="status">Chargement du dossier…</p> }
+    @if (error) { <p class="feedback error" role="alert">{{ error }}</p> }
+    @if (notice) { <p class="feedback" role="status">{{ notice }}</p> }
+    @if (detail; as d) {
+      <header class="workspace-header">
+        <div class="lawyer-heading">
+          <div class="lawyer-photo"><app-lawyer-avatar [photoUrl]="d.profile.photoUrl" [name]="'Me ' + d.profile.firstName + ' ' + d.profile.lastName" /></div>
+          <div><span class="breadcrumb">Administration / Avocats / Dossier</span><h1>Me {{ d.profile.firstName }} {{ d.profile.lastName }}</h1><p>{{ d.profile.city }}, {{ d.profile.country }} · {{ specialties[d.profile.specialty] }}</p></div>
+        </div>
+        <span class="status-badge">{{ reviewLabels[d.profile.reviewStatus] }}</span>
+      </header>
+      <div class="detail-grid">
+        <div>
+          <section class="admin-card">
+            <div class="card-heading"><div><p class="overline">PROFIL AVOCAT</p><h2>Informations du dossier</h2></div></div>
+            <dl class="profile-grid">
+              <div><dt>E-mail</dt><dd>{{ d.email }}</dd></div>
+              <div><dt>Téléphone</dt><dd>{{ d.profile.phone }}</dd></div>
+              <div><dt>Spécialité</dt><dd>{{ specialties[d.profile.specialty] }}</dd></div>
+              <div><dt>Expérience</dt><dd>{{ d.profile.experienceYears === null ? 'Non renseignée' : d.profile.experienceYears + ' ans' }}</dd></div>
+              <div><dt>Localisation</dt><dd>{{ d.profile.city }}, {{ d.profile.country }}</dd></div>
+              <div><dt>Cabinet</dt><dd>{{ officeAddress || 'Non renseigné' }}</dd></div>
+              <div><dt>Site web</dt><dd>{{ d.profile.websiteUrl || 'Non renseigné' }}</dd></div>
+              <div><dt>Inscrit le</dt><dd>{{ d.profile.createdAt | date:'dd/MM/yyyy' }}</dd></div>
+            </dl>
+            @if (d.profile.cvText) { <div class="profile-bio"><h3>Parcours</h3><p>{{ d.profile.cvText }}</p></div> }
+          </section>
+          <section class="admin-card">
+            <div class="card-heading"><div><p class="overline">PIÈCES JOINTES</p><h2>Documents</h2><p>Documents associés au dossier de l’avocat.</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Nom</th><th>Taille</th><th>Ajouté le</th></tr></thead><tbody>
+              @for (document of d.documents; track document.id) {
+                <tr><td data-label="Nom">{{ document.originalName }}</td><td data-label="Taille">{{ document.sizeBytes }} octets</td><td data-label="Ajouté le">{{ document.createdAt | date:'dd/MM/yyyy' }}</td></tr>
+              } @empty { <tr><td colspan="3">Aucun document enregistré.</td></tr> }
+            </tbody></table></div>
+          </section>
+          <section class="admin-card">
+            <div class="card-heading"><div><p class="overline">COTISATIONS</p><h2>Historique des adhésions</h2></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Statut</th><th>Montant</th><th>Début</th><th>Fin</th></tr></thead><tbody>
+              @for (membership of d.memberships; track membership.id) {
+                <tr><td data-label="Statut">{{ membershipLabels[membership.status] }}</td><td data-label="Montant">{{ membership.amount }} {{ membership.currency }}</td><td data-label="Début">{{ membership.startsAt ? (membership.startsAt | date:'dd/MM/yyyy') : '—' }}</td><td data-label="Fin">{{ membership.endsAt ? (membership.endsAt | date:'dd/MM/yyyy') : '—' }}</td></tr>
+              } @empty { <tr><td colspan="4">Aucune adhésion enregistrée.</td></tr> }
+            </tbody></table></div>
+          </section>
+          <section class="admin-card">
+            <div class="card-heading"><div><p class="overline">ACTIVITÉ</p><h2>Contacts récents</h2><p>Les 100 derniers contacts au maximum.</p></div></div>
+            @if (contactError) { <p class="feedback error" role="alert">{{ contactError }}</p> }
+            @else {
+              <div class="activity-metrics"><div><span>Contacts récents</span><strong>{{ contacts.length }}</strong></div><div><span>Par e-mail</span><strong>{{ emailContacts }}</strong></div><div><span>Par téléphone</span><strong>{{ phoneContacts }}</strong></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Client</th><th>Canal</th><th>Date</th></tr></thead><tbody>
+                @for (entry of contacts; track entry.id) { <tr><td data-label="Client"><strong>{{ entry.firstName }} {{ entry.lastName }}</strong><small>{{ entry.email }}</small></td><td data-label="Canal">{{ entry.channel === 'email' ? 'E-mail' : 'Téléphone' }}</td><td data-label="Date">{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }}</td></tr> }
+                @empty { <tr><td colspan="3">Aucun contact enregistré.</td></tr> }
+              </tbody></table></div>
+            }
+            <h3>Journal du profil</h3>
+            @if (auditError) { <p class="feedback error" role="alert">{{ auditError }}</p> }
+            @else { <div class="table-wrap"><table><thead><tr><th>Action</th><th>Date</th></tr></thead><tbody>
+              @for (entry of audit; track entry.id) { <tr><td data-label="Action">{{ entry.action }}</td><td data-label="Date">{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }}</td></tr> }
+              @empty { <tr><td colspan="2">Aucune activité enregistrée.</td></tr> }
+            </tbody></table></div> }
+          </section>
+        </div>
+        <aside class="admin-card review-card">
+          <p class="overline">VALIDATION</p><h2>Décision administrative</h2>
+          <p>Statut actuel · {{ reviewLabels[d.profile.reviewStatus] }}</p>
+          <div class="review-actions"><button type="button" [disabled]="reviewing || loading || d.profile.reviewStatus === 'approved'" (click)="review('approved')">Approuver</button><button type="button" class="outline" [disabled]="reviewing || loading || d.profile.reviewStatus === 'rejected'" (click)="review('rejected')">Rejeter</button></div>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

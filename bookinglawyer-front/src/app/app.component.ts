@@ -1,10 +1,12 @@
-import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { Component, inject } from "@angular/core";
+import { Router, RouterLink, RouterOutlet } from "@angular/router";
 import { SiteHeaderComponent } from "./components/site-header/site-header.component";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, SiteHeaderComponent],
+  imports: [RouterLink, RouterOutlet, SiteHeaderComponent],
   templateUrl: "./app.component.html",
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly router = inject(Router);
+}

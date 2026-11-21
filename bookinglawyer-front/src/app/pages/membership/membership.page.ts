@@ -1,35 +1,41 @@
+import { DatePipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { FormsModule } from "@angular/forms";
 import { errorMessage } from "../../services/api.service";
+import { DossierService, type Membership } from "../../services/dossier.service";
 import { SessionService } from "../../services/session.service";
-import { DossierService } from "../../services/dossier.service";
 
 @Component({
-  imports: [FormsModule, RouterLink],
+  imports: [DatePipe, RouterLink],
   templateUrl: "./membership.page.html",
 })
 export class MembershipPage {
-  d = inject(DossierService);
-  selected = this.d.method;
-  saved = false;
+  readonly dossier = inject(DossierService);
+  private readonly session = inject(SessionService);
+  membership: Membership | null = null;
+  loading = true;
   busy = false;
   error = "";
-  private readonly session = inject(SessionService);
-  methods = [
-    ["bank_transfer", "Virement bancaire"],
-    ["paypal", "PayPal"],
-    ["cryptocurrency", "Cryptomonnaie"],
-  ];
+  loadFailed = false;
+
+  async ngOnInit() {
+    try {
+      this.membership = await this.session.request<Membership | null>("/memberships");
+    } catch (error) {
+      this.error = errorMessage(error);
+      this.loadFailed = true;
+    } finally {
+      this.loading = false;
+    }
+  }
 
   async save() {
-    if (!this.selected || this.busy) return;
+    if (this.busy || this.membership?.status === "active") return;
     this.busy = true;
     this.error = "";
     try {
-      await this.session.request("/memberships", "POST", { method: this.selected });
-      this.d.method = this.selected;
-      this.saved = true;
+      const result = await this.session.request<{ membership: Membership }>("/memberships", "POST", {});
+      this.membership = result.membership;
     } catch (error) {
       this.error = errorMessage(error);
     } finally {

@@ -1,0 +1,112 @@
+@switch (page) {
+  @case ('about') {
+    <section class="page-hero">
+      <p class="eyebrow">À propos de BookingLawyer</p>
+      <h1>Le droit commence par la bonne rencontre.</h1>
+      <p>Une plateforme pour trouver un avocat et entrer en relation avec un professionnel adapté à votre besoin.</p>
+    </section>
+    <section class="info-layout">
+      <div>
+        <p class="kicker">Notre démarche</p>
+        <h2>Vous orienter vers le bon professionnel</h2>
+        <p>Qu’il s’agisse d’une question personnelle ou professionnelle, BookingLawyer vous aide à identifier un avocat selon son domaine de pratique et son lieu d’exercice.</p>
+        <a class="button" routerLink="/annuaire">Explorer l’annuaire →</a>
+      </div>
+      <div class="info-card">
+        <h3>Pour les clients</h3>
+        <p>Recherchez un avocat, découvrez son profil et accédez à ses coordonnées.</p>
+        <h3>Pour les avocats</h3>
+        <p>Présentez votre activité et gérez votre profil professionnel.</p>
+        <a routerLink="/inscription">Rejoindre BookingLawyer →</a>
+      </div>
+    </section>
+    <section class="information-section">
+      <p class="kicker">Comment ça marche</p>
+      <h2>Trouver et contacter un avocat</h2>
+      <div class="steps-grid">
+        <div class="info-card"><h3>Recherchez</h3><p>Explorez les profils par domaine et par lieu d’exercice.</p></div>
+        <div class="info-card"><h3>Choisissez</h3><p>Consultez les informations disponibles pour identifier un professionnel.</p></div>
+        <div class="info-card"><h3>Prenez contact</h3><p>Accédez aux coordonnées pour échanger sur votre situation et les modalités d’intervention.</p></div>
+      </div>
+    </section>
+    <section class="information-section">
+      <p class="kicker">L’équipe</p>
+      <h2>Les personnes derrière BookingLawyer</h2>
+      <p>Les biographies de l’équipe seront présentées prochainement.</p>
+    </section>
+  }
+  @case ('news') {
+    <section class="page-hero">
+      <p class="eyebrow">Actualités</p>
+      <h1>News</h1>
+      <p>Retrouvez les publications et informations de BookingLawyer.</p>
+    </section>
+    <section class="information-section">
+      <p class="kicker">Dernières publications</p>
+      <h2>Les actualités</h2>
+      <div class="empty-content"><h3>Les articles arrivent prochainement.</h3><p>Les publications seront affichées ici dès leur mise en ligne.</p><a routerLink="/hotnews">Voir les Hotnews →</a></div>
+    </section>
+  }
+  @case ('hotnews') {
+    <section class="page-hero">
+      <p class="eyebrow">Actualités</p>
+      <h1>Hotnews</h1>
+      <p>Suivez les informations mises en avant par BookingLawyer.</p>
+    </section>
+    <section class="information-section">
+      <p class="kicker">À la une</p>
+      <h2>Les dernières Hotnews</h2>
+      <div class="empty-content"><h3>Aucune publication à la une pour le moment.</h3><p>Retrouvez ici les prochaines informations mises en avant.</p><a routerLink="/news">Voir toutes les news →</a></div>
+    </section>
+  }
+  @case ('pricing') {
+    <section class="page-hero">
+      <p class="eyebrow">Pricing</p>
+      <h1>Nos services et leurs tarifs.</h1>
+      <p>Retrouvez les informations tarifaires et les options de règlement des services BookingLawyer.</p>
+    </section>
+    <section class="information-section">
+      <p class="kicker">Services</p>
+      <h2>Choisissez le service adapté à votre besoin</h2>
+      <div class="pricing-grid">
+        <article class="info-card"><h3>Recherche d’un avocat</h3><p>Consultez les profils et prenez contact avec un professionnel du droit.</p><a class="button" routerLink="/annuaire">Trouver un avocat →</a></article>
+        <article class="info-card"><h3>Adhésion avocat</h3><p class="price">100 € <small>/ an</small></p><p>Créez votre profil professionnel et suivez votre dossier d’adhésion.</p><a class="button" routerLink="/cotisation">Consulter ma cotisation →</a></article>
+      </div>
+      <p class="service-note">Le paiement immédiat des services sera disponible après l’intégration d’un prestataire de paiement. Les honoraires d’un avocat sont à convenir directement avec lui.</p>
+    </section>
+  }
+  @case ('probono') {
+    <section class="page-hero">
+      <p class="eyebrow">Pro bono</p>
+      <h1>Faciliter l’accès au droit.</h1>
+      <p>Trouvez un accompagnement juridique gratuit pour les affaires de traite des êtres humains et de trafic illicite de migrants.</p>
+    </section>
+    <section class="info-layout">
+      <div>
+        <p class="kicker">Comprendre le pro bono</p>
+        <h2>Avocats engagés en pro bono</h2>
+        <p>Cette liste réunira les professionnels qui interviennent gratuitement dans ces deux domaines.</p>
+        <div class="empty-content"><h3>Liste en préparation</h3><p>Les profils pro bono seront publiés ici lorsqu’ils seront disponibles.</p></div>
+      </div>
+      <aside class="info-card">
+        <h3>Vous êtes avocat ?</h3>
+        <p>Vous intervenez gratuitement sur des affaires de traite des êtres humains ou de trafic illicite de migrants ? Créez votre profil pour rejoindre la plateforme.</p>
+        <a routerLink="/inscription">Créer mon profil →</a>
+      </aside>
+    </section>
+  }
+  @case ('faq') {
+    <section class="page-hero">
+      <p class="eyebrow">Centre d’aide</p>
+      <h1>Comment pouvons-nous vous aider ?</h1>
+      <p>Les réponses aux questions les plus courantes sur BookingLawyer.</p>
+    </section>
+    <section class="faq-list">
+      <details><summary>Comment trouver un avocat ?</summary><p>Consultez l’annuaire et recherchez par nom, localisation ou spécialité pour identifier un professionnel.</p></details>
+      <details><summary>Comment contacter un avocat ?</summary><p>Depuis la fiche d’un avocat, un client connecté peut demander ses coordonnées et le contacter directement.</p></details>
+      <details><summary>Comment un avocat rejoint-il la plateforme ?</summary><p>Il crée son compte, complète son profil, puis suit les étapes de cotisation et de validation administrative.</p></details>
+      <details><summary>Comment connaître les honoraires ?</summary><p>Les honoraires et les modalités d’intervention sont à discuter directement avec l’avocat avant toute prestation.</p></details>
+      <details><summary>Qu’est-ce que le pro bono ?</summary><p>Il s’agit d’une intervention juridique effectuée à titre gratuit. Les possibilités et conditions sont à vérifier auprès du professionnel.</p></details>
+    </section>
+  }
+}

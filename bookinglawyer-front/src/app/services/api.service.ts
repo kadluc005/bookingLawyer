@@ -1,3 +1,9 @@
+export class ApiError extends Error {
+  constructor(readonly status: number, message: string) {
+    super(message);
+  }
+}
+
 export async function api<T>(path: string, options: {
   method?: string;
   token?: string;
@@ -13,7 +19,7 @@ export async function api<T>(path: string, options: {
   });
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(data?.message?.toString() || "Requête refusée (" + response.status + ").");
+    throw new ApiError(response.status, data?.message?.toString() || "Requête refusée (" + response.status + ").");
   }
   return data as T;
 }

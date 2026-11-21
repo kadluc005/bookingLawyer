@@ -1,16 +1,39 @@
 <header>
-      <nav>
+      <div class="topbar"><div><span>Un réseau de professionnels du droit</span><span>La recherche juridique, simplifiée</span></div></div>
+      <nav class="site-nav" aria-label="Navigation principale">
         <a class="brand" routerLink="/" aria-label="BookingLawyer, accueil"
           ><span class="mark" aria-hidden="true">§</span>BookingLawyer</a
         >
-        <div class="navlinks">
-          <a routerLink="/annuaire" routerLinkActive="active">Annuaire</a>
+        <button class="menu-toggle" type="button" aria-controls="site-navigation"
+                [attr.aria-expanded]="menuOpen" (click)="menuOpen = !menuOpen">
+          <span aria-hidden="true">{{ menuOpen ? '✕' : '☰' }}</span>
+          {{ menuOpen ? 'Fermer' : 'Menu' }}
+        </button>
+        <div class="navlinks" id="site-navigation" [class.is-open]="menuOpen">
+          <a routerLink="/annuaire" routerLinkActive="active" (click)="menuOpen = false">Annuaire</a>
+          <details class="news-menu" #newsMenu
+                   (mouseenter)="setNewsHover(newsMenu, true)"
+                   (mouseleave)="setNewsHover(newsMenu, false)">
+            <summary (click)="handleNewsClick($event)">News</summary>
+            <div class="news-menu-content">
+              <a routerLink="/news" (click)="newsMenu.open = false; menuOpen = false">News</a>
+              <a routerLink="/hotnews" (click)="newsMenu.open = false; menuOpen = false">Hotnews</a>
+            </div>
+          </details>
+          <a routerLink="/pricing" routerLinkActive="active" (click)="menuOpen = false">Pricing</a>
+          <a routerLink="/a-propos" routerLinkActive="active" (click)="menuOpen = false">À propos</a>
+          <a routerLink="/pro-bono" routerLinkActive="active" (click)="menuOpen = false">Pro bono</a>
+          <a routerLink="/faq" routerLinkActive="active" (click)="menuOpen = false">FAQ</a>
+          <a routerLink="/contact" routerLinkActive="active" (click)="menuOpen = false">Contactez-nous</a>
+          <details class="account-menu" #accountMenu>
+            <summary>Mon espace</summary>
+            <div class="account-menu-content" (click)="accountMenu.open = false; menuOpen = false">
           @switch (session.account()?.role) {
             @case ('client') {
               <a routerLink="/client/profil" routerLinkActive="active">Mon profil</a>
             }
             @case ('lawyer') {
-              <a routerLink="/espace" routerLinkActive="active">Mon dossier</a>
+              <a routerLink="/espace" routerLinkActive="active">Tableau de bord</a>
               <a routerLink="/inscription/profil" routerLinkActive="active">Mon profil</a>
               <a routerLink="/cotisation" routerLinkActive="active">Cotisation</a>
             }
@@ -26,6 +49,8 @@
           @if (session.account()) {
             <button class="secondary" type="button" (click)="signOut()">Se déconnecter</button>
           }
+            </div>
+          </details>
         </div>
       </nav>
     </header>

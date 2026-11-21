@@ -1,0 +1,36 @@
+<section class="contact-hero">
+  <p class="eyebrow">Contactez-nous</p>
+  <h1>Exposez votre problème.<br />Nous vous recommandons un avocat.</h1>
+  <p>Décrivez votre situation et renseignez vos coordonnées pour préparer votre demande de mise en relation.</p>
+</section>
+<div class="contact-layout">
+  <div class="contact-intro">
+    <p class="kicker">Votre demande</p>
+    <h2>Parlez-nous de votre situation</h2>
+    <p>Ces informations aideront à comprendre votre besoin et à vous orienter vers un professionnel du droit.</p>
+    <a routerLink="/annuaire">Consulter l’annuaire →</a>
+  </div>
+  <section class="contact-form">
+    <h2>Vos informations</h2>
+    <p>Complétez les champs ci-dessous.</p>
+    <form>
+      <div class="form-grid">
+        <label>Prénom <input name="firstName" autocomplete="given-name" [(ngModel)]="request.firstName" required maxlength="120" /></label>
+        <label>Nom <input name="lastName" autocomplete="family-name" [(ngModel)]="request.lastName" required maxlength="120" /></label>
+        <label>Pays <input name="country" autocomplete="country-name" [(ngModel)]="request.country" required maxlength="120" /></label>
+        <label>Ville <input name="city" autocomplete="address-level2" [(ngModel)]="request.city" required maxlength="120" /></label>
+        <label>Téléphone <input type="tel" name="phone" autocomplete="tel" [(ngModel)]="request.phone" required maxlength="32" /></label>
+        <label>Adresse e-mail <input type="email" name="email" autocomplete="email" [(ngModel)]="request.email" required email maxlength="320" /></label>
+        <label class="full-width">Mot de passe <input type="password" name="password" autocomplete="new-password" [(ngModel)]="request.password" required minlength="12" maxlength="128" /><small>12 caractères minimum</small></label>
+      </div>
+      <h2>Votre situation</h2>
+      <div class="form-grid">
+        <label class="full-width">Brève description du problème juridique <textarea name="description" rows="5" [(ngModel)]="request.description" required maxlength="5000"></textarea></label>
+        <label>Date de l’événement <input type="date" name="eventDate" [(ngModel)]="request.eventDate" required /></label>
+        <label>Lieu de l’événement <input name="eventLocation" [(ngModel)]="request.eventLocation" required maxlength="200" /></label>
+      </div>
+      <p class="availability" id="contact-availability">L’envoi de votre demande sera disponible prochainement.</p>
+      <button type="button" disabled aria-describedby="contact-availability">Envoyer ma demande</button>
+    </form>
+  </section>
+</div>

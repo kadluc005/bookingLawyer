@@ -1,40 +1,64 @@
-<h1>Administration</h1>
-@if (error) { <p role="alert">{{ error }}</p> }
-@if (notice) { <p role="status">{{ notice }}</p> }
-<section class="sheet panel">
-  <h2>Validation des avocats</h2>
-  <label>Identifiant de l’avocat (UUID)
-    <input [(ngModel)]="lawyerId" [disabled]="busy" />
-  </label>
-  <div class="actions">
-    <button [disabled]="busy || !lawyerId.trim()" (click)="review('approved')">Approuver</button>
-    <button class="secondary" [disabled]="busy || !lawyerId.trim()" (click)="review('rejected')">Rejeter</button>
-    <button class="secondary" [disabled]="busy || !lawyerId.trim()" (click)="loadActivity()">Voir l’activité</button>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <a class="admin-brand" routerLink="/"><span>§</span> BookingLawyer</a>
+      <button class="admin-menu-toggle" type="button" aria-controls="admin-navigation" [attr.aria-expanded]="menuOpen" (click)="menuOpen = !menuOpen"><span aria-hidden="true">{{ menuOpen ? '✕' : '☰' }}</span> Menu</button>
+    </div>
+    <p class="sidebar-label">ESPACE ADMINISTRATION</p>
+    <nav id="admin-navigation" [class.is-open]="menuOpen" aria-label="Navigation administrateur">
+      <a routerLink="/administration" [class.current]="!showLawyers" (click)="menuOpen = false">◫ <span>Vue d’ensemble</span></a>
+      <a routerLink="/administration/avocats" [class.current]="showLawyers" (click)="menuOpen = false">♙ <span>Avocats</span></a>
+      <a routerLink="/administration" fragment="clients" (click)="menuOpen = false">♧ <span>Clients</span></a>
+      <a routerLink="/annuaire">↗ <span>Voir le site</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span>{{ session.account()?.email }}</span><button type="button" (click)="signOut()">Déconnexion</button></div>
+  </aside>
+  <div class="workspace">
+    <header class="workspace-header">
+      <div><span class="breadcrumb">BookingLawyer / Administration</span><h1>{{ showLawyers ? 'Avocats' : 'Vue d’ensemble' }}</h1><p>Suivez l’activité de la plateforme et les dossiers des avocats.</p></div>
+      <a class="site-link" routerLink="/annuaire">Voir le site ↗</a>
+    </header>
+    @if (!showLawyers) {
+      <div class="metrics" aria-label="Récapitulatif">
+        <article><span class="metric-icon">♙</span><p>Avocats</p><strong>{{ totalLawyers ?? '—' }}</strong><small>Profils inscrits</small></article>
+        <article><span class="metric-icon">◷</span><p>Dossiers en attente</p><strong>{{ pendingLawyers ?? '—' }}</strong><small>En attente de validation</small></article>
+        <article><span class="metric-icon">♧</span><p>Clients affichés</p><strong>{{ clientError || clientsBusy ? '—' : clients.length }}</strong><small>Sur la page de résultats</small></article>
+      </div>
+    }
+    <section class="admin-card" id="avocats">
+      <div class="card-heading"><div><p class="overline">SUIVI DES PROFILS</p><h2>Avocats inscrits</h2><p>Consultez les profils et leur statut de validation.</p></div></div>
+      <div class="list-actions"><button type="button" class="outline" [disabled]="lawyersBusy" (click)="loadLawyers(lawyersOffset)">Actualiser la liste</button></div>
+      @if (lawyersError) { <p class="feedback error" role="alert">{{ lawyersError }}</p> }
+      @else if (lawyersBusy) { <p role="status">Chargement des avocats…</p> }
+      @else {
+        <div class="table-wrap"><table><thead><tr><th>Avocat</th><th>Localisation</th><th>Spécialité</th><th>Validation</th><th>Dossier</th></tr></thead><tbody>
+          @for (lawyer of lawyers; track lawyer.lawyerId) {
+            <tr>
+              <td data-label="Avocat"><strong>Me {{ lawyer.firstName }} {{ lawyer.lastName }}</strong><small>{{ lawyer.email }}</small></td>
+              <td data-label="Localisation">{{ lawyer.city }}, {{ lawyer.country }}</td>
+              <td data-label="Spécialité">{{ specialties[lawyer.specialty] }}</td>
+              <td data-label="Validation">{{ reviewLabels[lawyer.reviewStatus] }}</td>
+              <td data-label="Dossier"><a class="button outline" [routerLink]="['/administration/avocats', lawyer.lawyerId]">Ouvrir le dossier</a></td>
+            </tr>
+          } @empty { <tr><td colspan="5">Aucun avocat inscrit.</td></tr> }
+        </tbody></table></div>
+        <div class="pagination"><span>{{ totalLawyers ?? 0 }} avocat{{ totalLawyers === 1 ? '' : 's' }}</span><div><button class="outline" type="button" [disabled]="lawyersOffset === 0" (click)="loadLawyers(lawyersOffset - pageSize)">Précédent</button><button class="outline" type="button" [disabled]="lawyersOffset + lawyers.length >= (totalLawyers ?? 0)" (click)="loadLawyers(lawyersOffset + pageSize)">Suivant</button></div></div>
+      }
+    </section>
+    @if (!showLawyers) {
+      <section class="admin-card" id="clients">
+        <div class="card-heading"><div><p class="overline">GESTION DES COMPTES</p><h2>Clients inscrits</h2><p>Recherchez les profils clients de la plateforme.</p></div></div>
+        <form class="client-search" (ngSubmit)="search()"><label for="client-name">Rechercher par nom</label><div class="search-controls"><input id="client-name" name="name" [(ngModel)]="name" placeholder="Nom du client" /><button [disabled]="clientsBusy">Rechercher</button></div></form>
+        @if (clientError) { <p class="feedback error" role="alert">{{ clientError }}</p> }
+        @else if (clientsBusy) { <p role="status">Chargement…</p> }
+        @else {
+          <div class="table-wrap"><table><thead><tr><th>Client</th><th>Adresse e-mail</th></tr></thead><tbody>
+            @for (client of clients; track client.userId) { <tr><td data-label="Client"><strong>{{ client.firstName }} {{ client.lastName }}</strong></td><td data-label="Adresse e-mail">{{ client.email }}</td></tr> }
+            @empty { <tr><td colspan="2">Aucun client trouvé.</td></tr> }
+          </tbody></table></div>
+          <div class="pagination"><span>Résultats {{ clients.length ? offset + 1 : 0 }}–{{ offset + clients.length }}</span><div><button class="outline" type="button" [disabled]="offset === 0" (click)="search(offset - pageSize)">Précédent</button><button class="outline" type="button" [disabled]="clients.length < pageSize" (click)="search(offset + pageSize)">Suivant</button></div></div>
+        }
+      </section>
+    }
   </div>
-  @if (contacts.length) {
-    <h3>Contacts</h3>
-    <ul>
-      @for (entry of contacts; track entry.id) {
-        <li>{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ entry.email }} · {{ entry.channel }}</li>
-      }
-    </ul>
-  }
-  @if (audit.length) {
-    <h3>Journal des décisions</h3>
-    <ul>
-      @for (entry of audit; track entry.id) {
-        <li>{{ entry.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ entry.action }}</li>
-      }
-    </ul>
-  }
-</section>
-<section class="sheet panel">
-  <h2>Clients inscrits</h2>
-  <form (ngSubmit)="search()">
-    <label>Nom <input name="name" [(ngModel)]="name" /></label>
-    <button [disabled]="busy">Rechercher</button>
-  </form>
-  @for (client of clients; track client.userId) {
-    <p>{{ client.firstName }} {{ client.lastName }} · {{ client.email }}</p>
-  }
-</section>
+</div>

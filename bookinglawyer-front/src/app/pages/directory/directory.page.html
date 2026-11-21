@@ -1,13 +1,39 @@
 <section class="hero">
-  <div>
-    <h1>Trouvez votre avocat</h1>
+  <div class="hero-content">
+    <p class="hero-eyebrow">BookingLawyer · Annuaire juridique</p>
+    <h1>Le bon avocat pour vous accompagner.</h1>
     <p>
-      Recherchez un professionnel par nom, par lieu d’exercice ou par
-      spécialité.
+      Trouvez un professionnel du droit selon votre situation, votre ville et votre domaine de recherche.
     </p>
+    <div class="hero-actions">
+      <a class="hero-button" href="#recherche">Trouver un avocat <span aria-hidden="true">→</span></a>
+      <a class="hero-link" routerLink="/inscription">Vous êtes avocat ? <span aria-hidden="true">↗</span></a>
+    </div>
   </div>
-  <div class="architecture" aria-hidden="true"></div>
 </section>
+<section class="intro" aria-label="Trouver un avocat">
+  <div>
+    <span class="intro-icon" aria-hidden="true">⌕</span>
+    <h2>Une recherche simple</h2>
+    <p>Explorez les profils par nom, localisation ou domaine juridique.</p>
+  </div>
+  <div>
+    <span class="intro-icon" aria-hidden="true">§</span>
+    <h2>Des profils professionnels</h2>
+    <p>Découvrez le parcours et les domaines de pratique des avocats.</p>
+  </div>
+  <div>
+    <span class="intro-icon" aria-hidden="true">↗</span>
+    <h2>Un contact direct</h2>
+    <p>Retrouvez les coordonnées du professionnel qui vous convient.</p>
+  </div>
+</section>
+<section id="recherche" class="directory-section">
+<div class="directory-heading">
+  <p class="kicker">Notre annuaire</p>
+  <h2>Trouvez le professionnel qui vous correspond</h2>
+  <p>Parcourez les profils et affinez votre recherche.</p>
+</div>
 @if (session.account()?.role !== 'client') {
   <p>Connectez-vous comme client pour consulter l’annuaire.</p>
   <a routerLink="/connexion">Se connecter</a>
@@ -54,3 +80,4 @@
 </section>
 
 }
+</section>

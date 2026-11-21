@@ -1,23 +1,94 @@
-<a class="back" routerLink="/annuaire">← Annuaire</a>
-@if (error) { <p role="alert">{{ error }}</p> }
+<a class="back-link" routerLink="/annuaire"><span aria-hidden="true">←</span> Retour à l’annuaire</a>
+
+@if (error) {
+  <p class="state-message" role="alert">{{ error }}</p>
+}
 @if (profile; as p) {
-  <article class="sheet detail">
-    <p class="kicker">{{ labels[p.specialty] }}</p>
-    <h1>Me {{ p.first }} {{ p.last }}</h1>
-    <p>{{ p.city }}, {{ p.country }} @if (p.years !== null) { · {{ p.years }} ans de pratique }</p>
-    <h2>Contacter le cabinet</h2>
-    <div class="actions">
-      <button type="button" [disabled]="busy" (click)="reveal('email')">Afficher l’e-mail</button>
-      <button type="button" class="secondary" [disabled]="busy" (click)="reveal('phone')">Afficher le téléphone</button>
+  <article class="lawyer-profile">
+    <div class="profile-banner"></div>
+    <div class="profile-heading">
+      <div class="profile-photo">
+        <app-lawyer-avatar [photoUrl]="p.photoUrl" [name]="'Me ' + p.first + ' ' + p.last" />
+      </div>
+      <div class="profile-identity">
+        <p class="profile-label">PROFIL AVOCAT</p>
+        <h1>Me {{ p.first }} {{ p.last }}</h1>
+        <p class="profile-location"><span aria-hidden="true">⌖</span> {{ p.city }}, {{ p.country }}</p>
+      </div>
+      <span class="specialty">{{ labels[p.specialty] }}</span>
     </div>
-    @if (revealed; as contact) {
-      <a [href]="(contact.channel === 'email' ? 'mailto:' : 'tel:') + contact.value">{{ contact.value }}</a>
-    }
+
+    <div class="profile-content">
+      <div class="profile-main">
+        <section class="content-section">
+          <p class="section-label">DOMAINES ET PARCOURS</p>
+          <h2>À propos de l’avocat</h2>
+          <div class="profile-facts">
+            <div><span>Spécialité</span><strong>{{ labels[p.specialty] }}</strong></div>
+            <div><span>Lieu d’exercice</span><strong>{{ p.city }}, {{ p.country }}</strong></div>
+            @if (p.years !== null) {
+              <div><span>Expérience</span><strong>{{ p.years }} an{{ p.years > 1 ? 's' : '' }} de pratique</strong></div>
+            }
+          </div>
+          @if (p.bio) { <p class="biography">{{ p.bio }}</p> }
+          @if (p.officeStreet || p.officeNumber || p.officeCity || p.officeCountry) {
+            <div class="office">
+              <h3>Cabinet</h3>
+              <p>{{ p.officeNumber }} {{ p.officeStreet }}@if (p.officeCity) { · {{ p.officeCity }} }@if (p.officeCountry) {, {{ p.officeCountry }} }</p>
+            </div>
+          }
+          @if (p.websiteUrl) {
+            <a class="website-link" [href]="p.websiteUrl" target="_blank" rel="noopener noreferrer">Consulter le site du cabinet ↗</a>
+          }
+        </section>
+
+        <section class="content-section documents">
+          <div class="section-heading">
+            <div><p class="section-label">RESSOURCES</p><h2>Documents</h2></div>
+            @if (p.documents) { <span class="document-count">{{ p.documents.length }} document{{ p.documents.length > 1 ? 's' : '' }}</span> }
+          </div>
+          @if (p.documents; as documents) {
+            @for (document of documents; track document.id) {
+              <a class="document-row" [href]="document.url" target="_blank" rel="noopener noreferrer">
+                <span class="document-icon" aria-hidden="true">▤</span>
+                <span class="document-name">{{ document.name }}</span>
+                <span class="document-action">Ouvrir ↗</span>
+              </a>
+            } @empty {
+              <p class="empty-documents">Aucun document disponible sur ce profil.</p>
+            }
+          } @else {
+            <p class="empty-documents">Les documents ne sont pas encore disponibles sur la fiche.</p>
+          }
+        </section>
+      </div>
+
+      <aside class="contact-card">
+        <p class="section-label">PRENDRE CONTACT</p>
+        <h2>Contacter le cabinet</h2>
+        <p>Échangez directement avec Me {{ p.last }} pour présenter votre besoin.</p>
+        <div class="contact-options">
+          @if (revealed.email; as email) {
+            <a class="contact-button contact-primary" [href]="'mailto:' + email"><span aria-hidden="true">✉</span><span>{{ email }}</span></a>
+          } @else {
+            <button class="contact-button contact-primary" type="button" [disabled]="contactBusy !== null" (click)="reveal('email')"><span aria-hidden="true">✉</span><span>{{ contactBusy === 'email' ? 'Chargement…' : 'Afficher l’e-mail' }}</span></button>
+          }
+          @if (revealed.phone; as phone) {
+            <a class="contact-button contact-secondary" [href]="'tel:' + phone"><span aria-hidden="true">☎</span><span>{{ phone }}</span></a>
+          } @else {
+            <button class="contact-button contact-secondary" type="button" [disabled]="contactBusy !== null" (click)="reveal('phone')"><span aria-hidden="true">☎</span><span>{{ contactBusy === 'phone' ? 'Chargement…' : 'Afficher le téléphone' }}</span></button>
+          }
+          <button class="contact-button chat-button" type="button" disabled aria-describedby="chat-availability"><span aria-hidden="true">▢</span><span>Ouvrir le chat</span></button>
+          <p id="chat-availability" class="chat-note">Chat bientôt disponible</p>
+        </div>
+        @if (contactError) { <p class="contact-error" role="alert">{{ contactError }}</p> }
+      </aside>
+    </div>
   </article>
 } @else if (session.account()?.role !== 'client') {
-  <a class="button" routerLink="/connexion" [queryParams]="{ avocat: id }">Se connecter comme client</a>
+  <section class="state-message"><h1>Consulter le profil</h1><p>Connectez-vous à votre compte client pour consulter cette fiche.</p><a class="button" routerLink="/connexion" [queryParams]="{ avocat: id }">Se connecter comme client</a></section>
 } @else if (busy) {
-  <p role="status">Chargement…</p>
+  <p class="state-message" role="status">Chargement du profil…</p>
 } @else if (!error) {
-  <h1>Profil introuvable</h1>
+  <section class="state-message"><h1>Profil introuvable</h1><a routerLink="/annuaire">Revenir à l’annuaire</a></section>
 }

@@ -6,17 +6,24 @@ import type { ContactChannel } from "../../services/activity.service";
 import { errorMessage } from "../../services/api.service";
 import { DirectoryService } from "../../services/directory.service";
 import { SessionService } from "../../services/session.service";
+import { LawyerAvatarComponent } from "../../components/lawyer-avatar/lawyer-avatar.component";
 
-@Component({ imports: [RouterLink], templateUrl: "./lawyer-detail.page.html" })
+@Component({
+  imports: [RouterLink, LawyerAvatarComponent],
+  templateUrl: "./lawyer-detail.page.html",
+  styleUrl: "./lawyer-detail.page.css",
+})
 export class DetailPage {
   private readonly directory = inject(DirectoryService);
   readonly id = inject(ActivatedRoute).snapshot.paramMap.get("id");
   readonly session = inject(SessionService);
   readonly labels = specialties;
   profile?: Lawyer;
-  revealed?: { channel: ContactChannel; value: string };
+  readonly revealed: Partial<Record<ContactChannel, string>> = {};
   error = "";
   busy = false;
+  contactBusy: ContactChannel | null = null;
+  contactError = "";
 
   async ngOnInit() {
     if (this.session.account()?.role !== "client") return;
@@ -31,16 +38,18 @@ export class DetailPage {
   }
 
   async reveal(channel: ContactChannel) {
-    if (!this.profile || this.busy) return;
-    this.busy = true;
-    this.error = "";
-    this.revealed = undefined;
+    if (!this.profile || this.contactBusy || this.revealed[channel]) return;
+    this.contactBusy = channel;
+    this.contactError = "";
     try {
-      this.revealed = await this.session.request("/lawyers/" + this.profile.id + "/contact", "POST", { channel });
+      const contact = await this.session.request<{ channel: ContactChannel; value: string }>(
+        "/lawyers/" + encodeURIComponent(this.profile.id) + "/contact", "POST", { channel },
+      );
+      this.revealed[channel] = contact.value;
     } catch (error) {
-      this.error = errorMessage(error);
+      this.contactError = errorMessage(error);
     } finally {
-      this.busy = false;
+      this.contactBusy = null;
     }
   }
 }

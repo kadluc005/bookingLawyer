@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { and, eq, gt, or } from 'drizzle-orm';
+import { and, desc, eq, gt, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { AuditLogsService } from './audit-logs.service.js';
 import {
@@ -16,7 +16,7 @@ import {
 
 export type NewAnnualMembership = {
   lawyerUserId: string;
-  method: typeof payments.$inferInsert.method;
+  method?: typeof payments.$inferInsert.method;
 };
 
 const ANNUAL_MEMBERSHIP_AMOUNT = '100.00';
@@ -37,9 +37,27 @@ export class MembershipsService {
     private readonly auditLogsService: AuditLogsService,
   ) {}
 
+  async findLatestForLawyer(lawyerUserId: string) {
+    const [membership] = await this.db
+      .select()
+      .from(memberships)
+      .where(eq(memberships.lawyerUserId, lawyerUserId))
+      .orderBy(desc(memberships.createdAt), desc(memberships.id))
+      .limit(1);
+
+    if (
+      membership?.status === 'active' &&
+      membership.endsAt &&
+      membership.endsAt <= new Date()
+    ) {
+      return { ...membership, status: 'expired' as const };
+    }
+
+    return membership ?? null;
+  }
+
   async createAnnualMembership(input: NewAnnualMembership) {
     const result = await this.db.transaction(async (tx) => {
-      const now = new Date();
       const [lawyer] = await tx
         .select({ userId: lawyerProfiles.userId })
         .from(lawyerProfiles)
@@ -50,27 +68,21 @@ export class MembershipsService {
         throw new NotFoundException('Lawyer profile not found.');
       }
 
+      const now = new Date();
       const [existing] = await tx
         .select({ id: memberships.id })
         .from(memberships)
         .where(
           and(
             eq(memberships.lawyerUserId, input.lawyerUserId),
-            or(
-              eq(memberships.status, 'pending_payment'),
-              and(
-                eq(memberships.status, 'active'),
-                gt(memberships.endsAt, now),
-              ),
-            ),
+            eq(memberships.status, 'active'),
+            gt(memberships.endsAt, now),
           ),
         )
         .for('update');
 
       if (existing) {
-        throw new ConflictException(
-          'A pending or active membership already exists.',
-        );
+        throw new ConflictException('An active membership already exists.');
       }
 
       const [membership] = await tx
@@ -79,8 +91,14 @@ export class MembershipsService {
           lawyerUserId: input.lawyerUserId,
           amount: ANNUAL_MEMBERSHIP_AMOUNT,
           currency: 'EUR',
+          status: 'active',
+          startsAt: now,
+          endsAt: sql`(${now.toISOString()}::timestamptz AT TIME ZONE 'UTC' + interval '1 year') AT TIME ZONE 'UTC'`,
+          createdAt: now,
         })
         .returning();
+
+      if (!input.method) return { membership, payment: null };
 
       const [payment] = await tx
         .insert(payments)
@@ -151,7 +169,12 @@ export class MembershipsService {
             endsAt,
             updatedAt: now,
           })
-          .where(eq(memberships.id, payment.membershipId));
+          .where(
+            and(
+              eq(memberships.id, payment.membershipId),
+              eq(memberships.status, 'pending_payment'),
+            ),
+          );
       } else if (payment.status === 'succeeded' && status === 'refunded') {
         await tx
           .update(memberships)
