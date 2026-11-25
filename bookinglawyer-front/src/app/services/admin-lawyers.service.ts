@@ -14,6 +14,7 @@ export interface AdminLawyer {
   country: string;
   specialty: Specialty;
   reviewStatus: ReviewStatus;
+  submittedAt: string | null;
   accountStatus: string;
 }
 
@@ -37,6 +38,8 @@ export interface AdminLawyerDetail {
     photoUrl?: string | null;
     cvText: string | null;
     reviewStatus: ReviewStatus;
+    submittedAt: string | null;
+    rejectionReason: string | null;
     createdAt: string;
   };
   memberships: {
@@ -93,7 +96,7 @@ export class AdminLawyersService {
     return this.session.request<AdminAudit[]>("/admin/audit/lawyer_profile/" + encodeURIComponent(id));
   }
 
-  review(id: string, decision: "approved" | "rejected") {
-    return this.session.request("/admin/lawyers/" + encodeURIComponent(id) + "/review", "PATCH", { decision });
+  review(id: string, decision: "approved" | "rejected", reason?: string) {
+    return this.session.request<{ notificationSent: boolean | null }>("/admin/lawyers/" + encodeURIComponent(id) + "/review", "PATCH", { decision, reason });
   }
 }

@@ -103,21 +103,34 @@ export class EnrollPage {
     this.notice = "";
     window.scrollTo(0, 0);
   }
+  get needsSubmission() {
+    return !this.dossier.submittedAt || this.dossier.reviewStatus === "rejected";
+  }
+
   async confirm() {
     if (!this.checked || this.busy) return;
     this.busy = true;
     this.error = "";
     const { firstName, lastName, country, city, phone, specialty, officeStreet, officeNumber, cvText, websiteUrl } = this.p;
     try {
-      await this.session.request("/lawyers/me", "PATCH", {
+      const changes = {
         firstName, lastName, country, city, phone, specialty,
         officeStreet: officeStreet || null,
         officeNumber: officeNumber || null,
         cvText: cvText || null,
         websiteUrl: websiteUrl || null,
-      });
-      this.dossier.confirmed = true;
-      await this.router.navigateByUrl("/espace");
+      };
+      if (this.needsSubmission) {
+        const result = await this.session.request<{ notificationSent: boolean | null }>(
+          "/lawyers/me/submit", "POST", changes,
+        );
+        await this.router.navigateByUrl("/espace", {
+          state: { dossierSubmitted: true, notificationSent: result.notificationSent },
+        });
+      } else {
+        await this.session.request("/lawyers/me", "PATCH", changes);
+        await this.router.navigateByUrl("/espace");
+      }
     } catch (error) {
       this.error = errorMessage(error);
     } finally {

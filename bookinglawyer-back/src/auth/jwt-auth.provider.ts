@@ -23,6 +23,6 @@ export class JwtAuthProvider extends JwtBearerProvider<AuthenticatedUser> {
     }
 
     const user = await this.usersService.findById(claims.sub);
-    return user?.status === 'suspended' ? null : (user ?? null);
+    return user?.status === 'active' ? user : null;
   }
 }

@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -19,6 +20,20 @@ export class SignInDto {
   @MinLength(1)
   @MaxLength(128)
   password!: string;
+}
+
+export class ConfirmEmailDto {
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{43}$/, {
+    message: 'Le lien de confirmation est incomplet. Ouvrez le lien depuis le message ou demandez un nouveau lien.',
+  })
+  token!: string;
+}
+
+export class ResendVerificationEmailDto {
+  @IsEmail()
+  @MaxLength(320)
+  email!: string;
 }
 
 export class SignUpDto {

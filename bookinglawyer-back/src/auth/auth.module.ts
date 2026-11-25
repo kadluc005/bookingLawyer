@@ -4,11 +4,12 @@ import { ServicesModule } from '../services/services.module.js';
 import { AccountController } from './account.controller.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { EmailVerificationService } from './email-verification.service.js';
 import { JwtAuthProvider } from './jwt-auth.provider.js';
 
 @Module({
   imports: [ServicesModule],
   controllers: [AccountController, AuthController],
-  providers: [AuthService, JwtAuthProvider],
+  providers: [AuthService, EmailVerificationService, JwtAuthProvider],
 })
 export class AuthModule {}

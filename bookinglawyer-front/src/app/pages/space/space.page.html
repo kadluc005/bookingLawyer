@@ -1,4 +1,5 @@
 <h1>Tableau de bord avocat</h1>
+@if (submissionNotice) { <p role="status">{{ submissionNotice }}</p> }
 @if (error) { <p role="alert">{{ error }}</p> }
 @if (loading) {
   <p role="status">Chargement du profil et de la cotisation…</p>
@@ -26,6 +27,11 @@
     <section class="sheet panel">
       <h2>Validation administrative</h2>
       <p>{{ reviewLabel }}</p>
+      @if (dossier.rejectionReason) {
+        <p><strong>Motif du rejet</strong></p>
+        <p style="white-space: pre-wrap">{{ dossier.rejectionReason }}</p>
+        <a routerLink="/inscription/profil">Corriger et soumettre mon dossier</a>
+      }
     </section>
   </div>
 }

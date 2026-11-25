@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -16,6 +17,8 @@ import {
   type NewLawyerProfile,
   type NewUser,
 } from '../database/schema.js';
+import { LawyerDossierMailService } from '../mail/lawyer-dossier-mail.service.js';
+import { AuditLogsService } from './audit-logs.service.js';
 
 export type LawyerProfileUpdate = Partial<
   Omit<
@@ -23,6 +26,8 @@ export type LawyerProfileUpdate = Partial<
     | 'userId'
     | 'experienceYears'
     | 'reviewStatus'
+    | 'submittedAt'
+    | 'rejectionReason'
     | 'reviewedBy'
     | 'reviewedAt'
     | 'createdAt'
@@ -35,6 +40,8 @@ export type NewLawyerAccountProfile = Omit<
   | 'userId'
   | 'experienceYears'
   | 'reviewStatus'
+  | 'submittedAt'
+  | 'rejectionReason'
   | 'reviewedBy'
   | 'reviewedAt'
   | 'createdAt'
@@ -59,6 +66,8 @@ export class LawyersService {
   constructor(
     @InjectDrizzle()
     private readonly db: NodePgDatabase,
+    private readonly auditLogs: AuditLogsService,
+    private readonly dossierMail: LawyerDossierMailService,
   ) {}
 
   async createAccount(
@@ -68,7 +77,11 @@ export class LawyersService {
     return this.db.transaction(async (tx) => {
       const [user] = await tx
         .insert(users)
-        .values({ ...account, role: 'lawyer', status: 'active' })
+        .values({
+          ...account,
+          role: 'lawyer',
+          status: 'pending_email_verification',
+        })
         .returning();
       const [lawyerProfile] = await tx
         .insert(lawyerProfiles)
@@ -106,11 +119,80 @@ export class LawyersService {
     return profile;
   }
 
+  async submitProfile(lawyerUserId: string, changes: LawyerProfileUpdate) {
+    const result = await this.db.transaction(async (tx) => {
+      const { profile, email } = await this.lockDossier(tx, lawyerUserId);
+      if (profile.reviewStatus === 'approved') {
+        throw new ConflictException('Ce dossier est déjà approuvé.');
+      }
+      if (profile.submittedAt && profile.reviewStatus === 'pending_review') {
+        return { profile, email, submitted: false };
+      }
+
+      const providedChanges = Object.fromEntries(
+        Object.entries(changes).filter(([, value]) => value !== undefined),
+      );
+      const proposed = { ...profile, ...providedChanges };
+      const requiredFields = [
+        proposed.firstName,
+        proposed.lastName,
+        proposed.country,
+        proposed.city,
+        proposed.phone,
+        proposed.officeStreet,
+        proposed.officeNumber,
+        proposed.specialty,
+      ];
+      if (requiredFields.some((value) => !value?.trim())) {
+        throw new BadRequestException(
+          'Complétez les champs obligatoires du profil avant de soumettre le dossier.',
+        );
+      }
+
+      const now = new Date();
+      const [submitted] = await tx
+        .update(lawyerProfiles)
+        .set({
+          ...changes,
+          submittedAt: now,
+          reviewStatus: 'pending_review',
+          rejectionReason: null,
+          reviewedBy: null,
+          reviewedAt: null,
+          updatedAt: now,
+        })
+        .where(eq(lawyerProfiles.userId, lawyerUserId))
+        .returning();
+      await this.auditLogs.record(
+        {
+          actorUserId: lawyerUserId,
+          action: 'lawyer.profile.submitted',
+          entityType: 'lawyer_profile',
+          entityId: lawyerUserId,
+        },
+        tx,
+      );
+      return { profile: submitted, email, submitted: true };
+    });
+
+    return {
+      profile: result.profile,
+      notificationSent: result.submitted
+        ? await this.dossierMail.send(result.email, { kind: 'submitted' })
+        : null,
+    };
+  }
+
   async reviewProfile(
     adminUserId: string,
     lawyerUserId: string,
     decision: 'approved' | 'rejected',
+    reason?: string,
   ) {
+    const rejectionReason = decision === 'rejected' ? reason?.trim() : undefined;
+    if (decision === 'rejected' && (!rejectionReason || rejectionReason.length > 2000)) {
+      throw new BadRequestException('Indiquez un motif de rejet de 1 à 2 000 caractères.');
+    }
     const [admin] = await this.db
       .select({ id: users.id })
       .from(users)
@@ -126,22 +208,59 @@ export class LawyersService {
       throw new ForbiddenException('An active administrator is required.');
     }
 
-    const [profile] = await this.db
-      .update(lawyerProfiles)
-      .set({
-        reviewStatus: decision,
-        reviewedBy: adminUserId,
-        reviewedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(lawyerProfiles.userId, lawyerUserId))
-      .returning();
+    const result = await this.db.transaction(async (tx) => {
+      const { profile, email } = await this.lockDossier(tx, lawyerUserId);
+      if (!profile.submittedAt) {
+        throw new ConflictException('Ce dossier n’a pas encore été soumis.');
+      }
+      if (profile.reviewStatus === decision && profile.rejectionReason === (rejectionReason ?? null)) {
+        return { profile, email, changed: false };
+      }
 
-    if (!profile) {
-      throw new NotFoundException('Lawyer profile not found.');
-    }
+      const now = new Date();
+      const [reviewed] = await tx
+        .update(lawyerProfiles)
+        .set({
+          reviewStatus: decision,
+          rejectionReason: rejectionReason ?? null,
+          reviewedBy: adminUserId,
+          reviewedAt: now,
+          updatedAt: now,
+        })
+        .where(eq(lawyerProfiles.userId, lawyerUserId))
+        .returning();
+      await this.auditLogs.record(
+        {
+          actorUserId: adminUserId,
+          action: `lawyer.profile.${decision}`,
+          entityType: 'lawyer_profile',
+          entityId: lawyerUserId,
+          metadata: rejectionReason ? { reason: rejectionReason } : undefined,
+        },
+        tx,
+      );
+      return { profile: reviewed, email, changed: true };
+    });
+    const notificationSent = result.changed
+      ? await this.dossierMail.send(
+          result.email,
+          rejectionReason
+            ? { kind: 'rejected', reason: rejectionReason }
+            : { kind: 'approved' },
+        )
+      : null;
+    return { ...result.profile, notificationSent };
+  }
 
-    return profile;
+  private async lockDossier(db: Pick<NodePgDatabase, 'select'>, lawyerUserId: string) {
+    const [dossier] = await db
+      .select({ profile: lawyerProfiles, email: users.email })
+      .from(lawyerProfiles)
+      .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+      .where(and(eq(lawyerProfiles.userId, lawyerUserId), eq(users.role, 'lawyer')))
+      .for('update', { of: lawyerProfiles });
+    if (!dossier) throw new NotFoundException('Lawyer profile not found.');
+    return dossier;
   }
 
   async listLawyersForAdmin(limit = 20, offset = 0) {
@@ -156,6 +275,7 @@ export class LawyersService {
           country: lawyerProfiles.country,
           specialty: lawyerProfiles.specialty,
           reviewStatus: lawyerProfiles.reviewStatus,
+          submittedAt: lawyerProfiles.submittedAt,
           accountStatus: users.status,
         })
         .from(lawyerProfiles)
@@ -167,7 +287,7 @@ export class LawyersService {
       this.db
         .select({
           total: sql<number>`count(*)::int`,
-          pending: sql<number>`count(*) filter (where ${lawyerProfiles.reviewStatus} = 'pending_review')::int`,
+          pending: sql<number>`count(*) filter (where ${lawyerProfiles.reviewStatus} = 'pending_review' and ${lawyerProfiles.submittedAt} is not null)::int`,
         })
         .from(lawyerProfiles)
         .innerJoin(users, eq(users.id, lawyerProfiles.userId))

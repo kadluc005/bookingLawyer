@@ -1,5 +1,6 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router, Routes } from "@angular/router";
+import { EmailVerificationPage } from "./pages/email-verification/email-verification.page";
 import { RegisterPage } from "./pages/register/register.page";
 import { DirectoryPage } from "./pages/directory/directory.page";
 import { DetailPage } from "./pages/lawyer-detail/lawyer-detail.page";
@@ -28,6 +29,11 @@ export const routes: Routes = [
     path: "connexion",
     component: AccessPage,
     title: "Connexion | BookingLawyer",
+  },
+  {
+    path: "verification-email",
+    component: EmailVerificationPage,
+    title: "Confirmation de votre e-mail | BookingLawyer",
   },
   {
     path: "annuaire",

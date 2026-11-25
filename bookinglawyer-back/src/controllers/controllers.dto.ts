@@ -6,10 +6,12 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Matches,
   Max,
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import type { NewLawyerProfile } from '../database/schema.js';
 import type { LawyerDirectoryQuery } from '../services/lawyers.service.js';
@@ -211,6 +213,12 @@ export class PaginationQueryDto {
 export class ReviewLawyerDto {
   @IsIn(['approved', 'rejected'])
   decision!: 'approved' | 'rejected';
+
+  @ValidateIf((body: ReviewLawyerDto, value: unknown) => body.decision === 'rejected' || value !== undefined)
+  @IsString({ message: 'Indiquez le motif du rejet.' })
+  @Matches(/\S/, { message: 'Indiquez le motif du rejet.' })
+  @MaxLength(2000)
+  reason?: string;
 }
 
 export class ContactClickDto {

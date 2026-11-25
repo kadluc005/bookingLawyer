@@ -16,8 +16,8 @@ export class AuditLogsService {
     private readonly db: NodePgDatabase,
   ) {}
 
-  async record(entry: NewAuditLog) {
-    const [log] = await this.db.insert(auditLogs).values(entry).returning();
+  async record(entry: NewAuditLog, db: Pick<NodePgDatabase, 'insert'> = this.db) {
+    const [log] = await db.insert(auditLogs).values(entry).returning();
     return log;
   }
 

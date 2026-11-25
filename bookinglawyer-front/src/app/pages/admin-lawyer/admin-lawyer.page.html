@@ -75,8 +75,23 @@
         </div>
         <aside class="admin-card review-card">
           <p class="overline">VALIDATION</p><h2>Décision administrative</h2>
-          <p>Statut actuel · {{ reviewLabels[d.profile.reviewStatus] }}</p>
-          <div class="review-actions"><button type="button" [disabled]="reviewing || loading || d.profile.reviewStatus === 'approved'" (click)="review('approved')">Approuver</button><button type="button" class="outline" [disabled]="reviewing || loading || d.profile.reviewStatus === 'rejected'" (click)="review('rejected')">Rejeter</button></div>
+          @if (d.profile.submittedAt) {
+            <p>Statut actuel · {{ reviewLabels[d.profile.reviewStatus] }}</p>
+            @if (d.profile.rejectionReason) {
+              <p><strong>Motif du rejet</strong></p>
+              <p style="white-space: pre-wrap">{{ d.profile.rejectionReason }}</p>
+            }
+            @if (d.profile.reviewStatus !== 'rejected') {
+              <label for="rejection-reason">Motif obligatoire en cas de rejet</label>
+              <textarea id="rejection-reason" [(ngModel)]="rejectionReason" maxlength="2000" rows="4" [disabled]="reviewing || loading"></textarea>
+            }
+            <div class="review-actions">
+              <button type="button" [disabled]="reviewing || loading || d.profile.reviewStatus === 'approved'" (click)="review('approved')">Approuver</button>
+              <button type="button" class="outline" [disabled]="reviewing || loading || d.profile.reviewStatus === 'rejected' || !rejectionReason.trim()" (click)="review('rejected')">Rejeter</button>
+            </div>
+          } @else {
+            <p>L’avocat doit soumettre son dossier avant la validation.</p>
+          }
         </aside>
       </div>
     }

@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { DossierService, type Membership } from "../../services/dossier.service";
 import { SessionService } from "../../services/session.service";
 import { errorMessage } from "../../services/api.service";
@@ -27,6 +27,12 @@ interface ContactsPage {
 export class SpacePage {
   readonly dossier = inject(DossierService);
   private readonly session = inject(SessionService);
+  private readonly submission = inject(Router).currentNavigation()?.extras.state;
+  readonly submissionNotice = this.submission?.["dossierSubmitted"]
+    ? this.submission["notificationSent"] === false
+      ? "Votre dossier a été soumis. L’envoi de l’e-mail de confirmation a échoué."
+      : "Votre dossier a été soumis et est en cours de vérification."
+    : "";
   error = "";
   loading = true;
   membership: Membership | null = null;
@@ -76,7 +82,7 @@ export class SpacePage {
 
   get reviewLabel() {
     return {
-      pending_review: "En attente",
+      pending_review: this.dossier.submittedAt ? "En cours de vérification" : "Dossier à soumettre",
       approved: "Approuvé",
       rejected: "Rejeté",
     }[this.dossier.reviewStatus];

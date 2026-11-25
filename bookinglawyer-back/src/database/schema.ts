@@ -81,6 +81,20 @@ export const users = pgTable(
   ],
 );
 
+export const emailVerifications = pgTable(
+  'email_verifications',
+  {
+    userId: uuid('user_id')
+      .primaryKey()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    tokenHash: varchar('token_hash', { length: 64 }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    uniqueIndex('email_verifications_token_hash_unique').on(table.tokenHash),
+  ],
+);
+
 export const lawyerProfiles = pgTable(
   'lawyer_profiles',
   {
@@ -104,6 +118,8 @@ export const lawyerProfiles = pgTable(
     reviewStatus: lawyerReviewStatusEnum('review_status')
       .notNull()
       .default('pending_review'),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }),
+    rejectionReason: text('rejection_reason'),
     reviewedBy: uuid('reviewed_by').references(() => users.id, {
       onDelete: 'set null',
     }),

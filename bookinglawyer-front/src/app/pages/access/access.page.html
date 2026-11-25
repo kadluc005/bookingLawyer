@@ -8,6 +8,7 @@
   </label>
   @if (error) { <p role="alert">{{ error }}</p> }
   <button [disabled]="form.invalid || busy">Se connecter</button>
+  <p><a routerLink="/verification-email">Renvoyer le lien de confirmation avocat</a></p>
   <p><a routerLink="/inscription/client">Créer un compte client</a></p>
   <p><a routerLink="/inscription">Créer un compte avocat</a></p>
 </form>

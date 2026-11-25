@@ -3,12 +3,10 @@ import { FormsModule, NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
 import { api, errorMessage } from "../../services/api.service";
 import { choices } from "../../models/profile.model";
-import { SessionService } from "../../services/session.service";
 
 @Component({ imports: [FormsModule], templateUrl: "./register.page.html" })
 export class RegisterPage {
   private readonly router = inject(Router);
-  private readonly session = inject(SessionService);
   readonly choices = choices;
   profile = { email: "", firstName: "", lastName: "", country: "", city: "", phone: "", specialty: "" };
   password = "";
@@ -21,9 +19,15 @@ export class RegisterPage {
     this.busy = true;
     this.error = "";
     try {
-      await api("/auth/register/lawyer", { method: "POST", body: { ...this.profile, password: this.password } });
-      await this.session.signIn(this.profile.email, this.password);
-      await this.router.navigateByUrl("/inscription/profil");
+      const result = await api<{ verificationEmailSent: boolean }>("/auth/register/lawyer", {
+        method: "POST",
+        body: { ...this.profile, password: this.password },
+      });
+      this.password = "";
+      this.confirmation = "";
+      await this.router.navigateByUrl("/verification-email", {
+        state: { email: this.profile.email, verificationEmailSent: result.verificationEmailSent },
+      });
     } catch (error) {
       this.error = errorMessage(error);
     } finally {

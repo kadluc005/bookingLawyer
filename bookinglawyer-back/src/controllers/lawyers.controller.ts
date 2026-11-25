@@ -49,6 +49,14 @@ export class LawyerProfileController {
     return this.lawyersService.findProfile(user.id);
   }
 
+  @Post('submit')
+  submitMyProfile(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() changes: UpdateLawyerProfileDto,
+  ) {
+    return this.lawyersService.submitProfile(user.id, changes);
+  }
+
   @Get('contacts')
   findMyContacts(
     @CurrentUser() user: AuthenticatedUser,

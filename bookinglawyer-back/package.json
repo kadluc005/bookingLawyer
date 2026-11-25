@@ -16,6 +16,7 @@
     "start:prod": "node dist/main",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "mail:verify": "npm run build && node dist/mail/verify-smtp.js",
     "lint": "oxlint --type-aware src/ test/",
     "test": "vitest run",
     "test:watch": "vitest",

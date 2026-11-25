@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { ClientsService } from '../services/clients.service.js';
 import type { NewLawyerAccountProfile } from '../services/lawyers.service.js';
 import { LawyersService } from '../services/lawyers.service.js';
 import { UsersService } from '../services/users.service.js';
+import { EmailVerificationService } from './email-verification.service.js';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     private readonly lawyersService: LawyersService,
     private readonly clientsService: ClientsService,
     private readonly auditLogsService: AuditLogsService,
+    private readonly emailVerification: EmailVerificationService,
   ) {}
 
   async registerLawyer(
@@ -51,9 +54,12 @@ export class AuthService {
       metadata: { role: 'lawyer' },
     });
 
+    const verificationEmailSent =
+      await this.emailVerification.send(normalizedEmail);
     return {
       user: withoutPasswordHash(result.user),
       profile: result.profile,
+      verificationEmailSent,
     };
   }
 
@@ -104,6 +110,11 @@ export class AuthService {
     if (!account || !passwordMatches || account.status === 'suspended') {
       throw new UnauthorizedException('Invalid email or password.');
     }
+    if (account.status === 'pending_email_verification') {
+      throw new ForbiddenException(
+        'Confirmez votre adresse e-mail avant de vous connecter.',
+      );
+    }
 
     if (this.passwordHasher.needsRehash(account.passwordHash)) {
       await this.usersService.updatePasswordHash(
@@ -120,7 +131,7 @@ export class AuthService {
     });
 
     const user = await this.usersService.findById(account.id);
-    if (!user) {
+    if (user?.status !== 'active') {
       throw new UnauthorizedException('Invalid email or password.');
     }
 
@@ -129,6 +140,10 @@ export class AuthService {
     });
 
     return { ...tokens, user };
+  }
+
+  async resendVerificationEmail(email: string) {
+    await this.emailVerification.send(normalizeEmail(email));
   }
 
   private async ensureEmailAvailable(email: string) {

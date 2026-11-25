@@ -1,0 +1,7 @@
+BookingLawyer
+{{title}}
+
+{{{body}}}
+
+{{actionLabel}}
+{{actionUrl}}

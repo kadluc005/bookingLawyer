@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { specialties } from "../../models/profile.model";
 import { AdminAudit, AdminContact, AdminLawyerDetail, AdminLawyersService } from "../../services/admin-lawyers.service";
@@ -9,7 +10,7 @@ import { SessionService } from "../../services/session.service";
 import { LawyerAvatarComponent } from "../../components/lawyer-avatar/lawyer-avatar.component";
 
 @Component({
-  imports: [DatePipe, RouterLink, LawyerAvatarComponent],
+  imports: [DatePipe, FormsModule, RouterLink, LawyerAvatarComponent],
   templateUrl: "./admin-lawyer.page.html",
   styleUrls: ["../admin/admin.page.css", "./admin-lawyer.page.css"],
 })
@@ -33,6 +34,7 @@ export class AdminLawyerPage {
   contactError = "";
   auditError = "";
   notice = "";
+  rejectionReason = "";
 
   ngOnInit() {
     void this.load();
@@ -59,14 +61,20 @@ export class AdminLawyerPage {
   }
 
   async review(decision: "approved" | "rejected") {
-    if (this.reviewing || this.loading || !this.detail) return;
+    if (this.reviewing || this.loading || !this.detail?.profile.submittedAt) return;
+    const reason = this.rejectionReason.trim();
+    if (decision === "rejected" && !reason) return;
     this.reviewing = true;
     this.error = "";
     this.notice = "";
     try {
-      await this.lawyers.review(this.id, decision);
-      this.detail.profile.reviewStatus = decision;
-      this.notice = "Décision enregistrée.";
+      const result = await this.lawyers.review(this.id, decision, decision === "rejected" ? reason : undefined);
+      this.rejectionReason = "";
+      this.notice = result.notificationSent === false
+        ? "Décision enregistrée. L’envoi de l’e-mail a échoué."
+        : result.notificationSent === true
+          ? "Décision enregistrée et e-mail envoyé."
+          : "Décision déjà enregistrée.";
       await this.load();
     } catch (error) {
       this.error = errorMessage(error);

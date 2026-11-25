@@ -6,7 +6,7 @@ BookingLawyer est une plateforme de mise en relation entre clients et avocats. U
 - **Client** — crée un compte, recherche un avocat et peut afficher son e-mail ou son téléphone.
 - **Administrateur** — consulte les dossiers, approuve ou rejette les profils et accède à l’activité de contact et au journal d’audit.
 
-L’enregistrement de la cotisation active l’abonnement localement, sans prélèvement. La vérification de l’e-mail par lien et le téléversement privé des CV avec extraction côté serveur restent à raccorder.
+L’enregistrement de la cotisation active l’abonnement localement, sans prélèvement. Les nouveaux comptes avocats doivent confirmer leur e-mail avant de se connecter. Le téléversement privé des CV avec extraction côté serveur reste à raccorder.
 
 ## Structure du dépôt
 
@@ -72,7 +72,13 @@ npm ci
 npm start
 ```
 
-Ouvre <http://localhost:4200>. Pour tester le parcours complet, inscris un avocat et un client avec deux adresses différentes. Enregistre la cotisation de l’avocat, valide son profil depuis un compte admin, puis retrouve-le dans l’annuaire avec le compte client.
+Ouvre <http://localhost:4200>. Pour tester le parcours complet, inscris un avocat et un client avec deux adresses différentes. Confirme l’e-mail de l’avocat, enregistre sa cotisation, valide son profil depuis un compte admin, puis retrouve-le dans l’annuaire avec le compte client.
+
+## Tester l’e-mail de confirmation
+
+Inscris un avocat depuis le frontend. Par défaut, NestJS écrit le message dans `bookinglawyer-back/emails/` sous forme de fichier `.eml`. Ouvre le fichier `.eml` dans un client de messagerie, clique sur **Confirmer mon adresse e-mail**, puis confirme sur le site et connecte-toi. Si tu consultes la source brute du fichier, le lien peut s’étendre sur deux lignes. Retire le `=` de fin de ligne ajouté par l’encodage et réunis les deux parties avant d’ouvrir le lien. Le lien est valable 24 heures et ne peut être utilisé qu’une fois. Un nouveau lien peut être demandé depuis la page de connexion.
+
+Pour utiliser un relais SMTP, renseigne `SMTP_URL` (URL `smtp://…` ou `smtps://…`), `MAIL_FROM` (expéditeur autorisé par le relais) et `FRONTEND_URL` (origine du frontend accessible aux destinataires) dans `bookinglawyer-back/.env`, puis redémarre NestJS. En local, l’origine du frontend est `http://localhost:4200` par défaut.
 
 ## Consulter la base et arrêter les services
 

@@ -197,7 +197,7 @@
     <div class="actions">
       <button class="secondary" (click)="go(2)">Modifier</button
       ><button [disabled]="!checked || busy" (click)="confirm()">
-        Confirmer mon profil
+        {{ needsSubmission ? "Soumettre mon dossier" : "Enregistrer les modifications" }}
       </button>
     </div>
     }

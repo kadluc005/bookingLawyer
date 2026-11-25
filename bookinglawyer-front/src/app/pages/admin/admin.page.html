@@ -37,7 +37,7 @@
               <td data-label="Avocat"><strong>Me {{ lawyer.firstName }} {{ lawyer.lastName }}</strong><small>{{ lawyer.email }}</small></td>
               <td data-label="Localisation">{{ lawyer.city }}, {{ lawyer.country }}</td>
               <td data-label="Spécialité">{{ specialties[lawyer.specialty] }}</td>
-              <td data-label="Validation">{{ reviewLabels[lawyer.reviewStatus] }}</td>
+              <td data-label="Validation">{{ lawyer.submittedAt ? reviewLabels[lawyer.reviewStatus] : "Dossier à soumettre" }}</td>
               <td data-label="Dossier"><a class="button outline" [routerLink]="['/administration/avocats', lawyer.lawyerId]">Ouvrir le dossier</a></td>
             </tr>
           } @empty { <tr><td colspan="5">Aucun avocat inscrit.</td></tr> }

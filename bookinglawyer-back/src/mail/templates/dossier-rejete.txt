@@ -1,0 +1,6 @@
+L’équipe BookingLawyer a examiné votre dossier.
+
+Motif du rejet
+{{reason}}
+
+Vous pouvez corriger votre dossier dans votre espace avocat, puis le soumettre à nouveau.

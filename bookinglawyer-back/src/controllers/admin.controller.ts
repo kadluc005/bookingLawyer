@@ -47,24 +47,17 @@ export class AdminController {
   }
 
   @Patch('lawyers/:lawyerId/review')
-  async reviewLawyer(
+  reviewLawyer(
     @CurrentUser() admin: AuthenticatedUser,
     @Param('lawyerId', ParseUUIDPipe) lawyerUserId: string,
     @Body() body: ReviewLawyerDto,
   ) {
-    const profile = await this.lawyersService.reviewProfile(
+    return this.lawyersService.reviewProfile(
       admin.id,
       lawyerUserId,
       body.decision,
+      body.reason,
     );
-    await this.auditLogsService.record({
-      actorUserId: admin.id,
-      action: `lawyer.profile.${body.decision}`,
-      entityType: 'lawyer_profile',
-      entityId: lawyerUserId,
-    });
-
-    return profile;
   }
 
   @Get('lawyers/:lawyerId')
