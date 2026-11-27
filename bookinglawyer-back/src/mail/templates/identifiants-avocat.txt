@@ -1,0 +1,7 @@
+Adresse e-mail
+{{email}}
+
+Mot de passe temporaire valable 24 heures
+{{password}}
+
+Choisissez votre mot de passe personnel dès la première connexion.

@@ -1,12 +1,12 @@
 ﻿# BookingLawyer
 
-BookingLawyer est une plateforme de mise en relation entre clients et avocats. Un avocat crée son compte, complète son profil et enregistre une cotisation valable un an. Il devient visible dans l’annuaire client après validation administrative, tant que son compte et sa cotisation sont actifs.
+BookingLawyer est une plateforme de mise en relation entre clients et avocats. Un avocat s’inscrit avec son adresse e-mail et reçoit un mot de passe temporaire. Après l’avoir remplacé, il enregistre sa cotisation annuelle et complète son dossier. Il devient visible dans l’annuaire client après validation administrative, tant que son compte et sa cotisation sont actifs.
 
 - **Avocat** — gère son profil, consulte l’échéance de sa cotisation et voit dans son tableau de bord les clients qui ont demandé ses coordonnées.
 - **Client** — crée un compte, recherche un avocat et peut afficher son e-mail ou son téléphone.
 - **Administrateur** — consulte les dossiers, approuve ou rejette les profils et accède à l’activité de contact et au journal d’audit.
 
-L’enregistrement de la cotisation active l’abonnement localement, sans prélèvement. Les nouveaux comptes avocats doivent confirmer leur e-mail avant de se connecter. Le téléversement privé des CV avec extraction côté serveur reste à raccorder.
+La cotisation annuelle de 100 € est confirmée en mode simulation, sans prélèvement. Le choix du mode de paiement déclenche l’envoi de la pro forma, de la confirmation de cotisation et d’une notification aux administrateurs actifs. Le téléversement privé des CV avec extraction côté serveur reste à raccorder.
 
 ## Structure du dépôt
 
@@ -72,11 +72,13 @@ npm ci
 npm start
 ```
 
-Ouvre <http://localhost:4200>. Pour tester le parcours complet, inscris un avocat et un client avec deux adresses différentes. Confirme l’e-mail de l’avocat, enregistre sa cotisation, valide son profil depuis un compte admin, puis retrouve-le dans l’annuaire avec le compte client.
+Ouvre <http://localhost:4200>. Pour tester le parcours complet, inscris un avocat et un client avec deux adresses différentes. Connecte-toi avec le mot de passe temporaire de l’avocat et remplace-le. Choisis un mode de paiement, complète et soumets le dossier, puis approuve-le avec un compte admin. Le compte client peut ensuite retrouver le profil dans l’annuaire.
 
-## Tester l’e-mail de confirmation
+## Tester les e-mails du parcours avocat
 
-Inscris un avocat depuis le frontend. Par défaut, NestJS écrit le message dans `bookinglawyer-back/emails/` sous forme de fichier `.eml`. Ouvre le fichier `.eml` dans un client de messagerie, clique sur **Confirmer mon adresse e-mail**, puis confirme sur le site et connecte-toi. Si tu consultes la source brute du fichier, le lien peut s’étendre sur deux lignes. Retire le `=` de fin de ligne ajouté par l’encodage et réunis les deux parties avant d’ouvrir le lien. Le lien est valable 24 heures et ne peut être utilisé qu’une fois. Un nouveau lien peut être demandé depuis la page de connexion.
+Inscris un avocat avec son adresse e-mail. Par défaut, NestJS écrit chaque message dans `bookinglawyer-back/emails/` sous forme de fichier `.eml`. Ouvre l’e-mail d’identifiants dans un client de messagerie. Le mot de passe temporaire expire après 24 heures et cesse de fonctionner dès qu’il est remplacé. Tu peux demander de nouveaux identifiants depuis la page de connexion.
+
+Sur la page **Cotisation annuelle**, confirme un mode de paiement pour recevoir la pro forma et le message de réussite. Les administrateurs actifs reçoivent un e-mail après activation de la cotisation et à chaque modification enregistrée du dossier.
 
 Pour utiliser un relais SMTP, renseigne `SMTP_URL` (URL `smtp://…` ou `smtps://…`), `MAIL_FROM` (expéditeur autorisé par le relais) et `FRONTEND_URL` (origine du frontend accessible aux destinataires) dans `bookinglawyer-back/.env`, puis redémarre NestJS. En local, l’origine du frontend est `http://localhost:4200` par défaut.
 

@@ -1,6 +1,5 @@
 import { Component, inject } from "@angular/core";
 import { Lawyer } from "../../models/lawyer.model";
-import { SessionService } from "../../services/session.service";
 import { errorMessage } from "../../services/api.service";
 import { RouterLink } from "@angular/router";
 import { FormsModule } from "@angular/forms";
@@ -14,18 +13,17 @@ import { DirectoryService } from "../../services/directory.service";
   styleUrl: "./directory.page.css",
 })
 export class DirectoryPage {
-  private readonly directory = inject(DirectoryService);
+  readonly directory = inject(DirectoryService);
   query = "";
   specialty = "";
   choices = choices;
 
-  readonly session = inject(SessionService);
   entries: Lawyer[] = [];
   error = "";
   busy = false;
 
   async ngOnInit() {
-    if (this.session.account()?.role !== "client") return;
+    if (!this.directory.canView()) return;
     this.busy = true;
     try {
       this.entries = await this.directory.list();

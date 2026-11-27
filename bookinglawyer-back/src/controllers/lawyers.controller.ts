@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { Can } from '@nestjs/authorization';
 import { CurrentUser } from '@nestjs/authentication';
-import { AuditLogsService } from '../services/audit-logs.service.js';
 import { ContactEventsService } from '../services/contact-events.service.js';
 import { LawyersService } from '../services/lawyers.service.js';
 import { MembershipsService } from '../services/memberships.service.js';
@@ -29,7 +28,7 @@ export class LawyerDirectoryController {
   constructor(private readonly lawyersService: LawyersService) {}
 
   @Get()
-  @Can(RolePolicy, 'client')
+  @Can(RolePolicy, 'viewLawyerDirectory')
   findVisibleDirectory(@Query() query: LawyerDirectoryQueryDto) {
     return this.lawyersService.findVisibleDirectory(query);
   }
@@ -40,7 +39,6 @@ export class LawyerDirectoryController {
 export class LawyerProfileController {
   constructor(
     private readonly lawyersService: LawyersService,
-    private readonly auditLogsService: AuditLogsService,
     private readonly contactEventsService: ContactEventsService,
   ) {}
 
@@ -70,20 +68,11 @@ export class LawyerProfileController {
   }
 
   @Patch()
-  async updateMyProfile(
+  updateMyProfile(
     @CurrentUser() user: AuthenticatedUser,
     @Body() changes: UpdateLawyerProfileDto,
   ) {
-    const profile = await this.lawyersService.updateProfile(user.id, changes);
-    await this.auditLogsService.record({
-      actorUserId: user.id,
-      action: 'lawyer.profile.updated',
-      entityType: 'lawyer_profile',
-      entityId: user.id,
-      metadata: { changedFields: Object.keys(changes) },
-    });
-
-    return profile;
+    return this.lawyersService.updateProfile(user.id, changes);
   }
 }
 
@@ -133,7 +122,7 @@ export class MembershipsController {
   ) {
     return this.membershipsService.createAnnualMembership({
       lawyerUserId: user.id,
-      method: body?.method,
+      method: body.method,
     });
   }
 }

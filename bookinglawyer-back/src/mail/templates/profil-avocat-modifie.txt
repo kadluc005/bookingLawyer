@@ -1,0 +1,5 @@
+Le compte avocat {{email}} a mis à jour son dossier.
+
+{{#each fields}}
+- {{this}}
+{{/each}}

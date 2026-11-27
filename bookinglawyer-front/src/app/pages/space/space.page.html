@@ -1,5 +1,6 @@
 <h1>Tableau de bord avocat</h1>
 @if (submissionNotice) { <p role="status">{{ submissionNotice }}</p> }
+@if (adminNotificationFailed) { <p role="alert">Les informations sont enregistrées, mais l’e-mail de notification à l’administration n’a pas pu être envoyé.</p> }
 @if (error) { <p role="alert">{{ error }}</p> }
 @if (loading) {
   <p role="status">Chargement du profil et de la cotisation…</p>
@@ -7,9 +8,14 @@
   <div class="grid overview">
     <section class="sheet panel">
       <h2>Mon profil</h2>
-      <p>Me {{ dossier.profile.firstName }} {{ dossier.profile.lastName }}</p>
-      <p>{{ dossier.profile.city }}, {{ dossier.profile.country }}</p>
-      <a routerLink="/inscription/profil">Modifier mon profil</a>
+      @if (dossier.profile.firstName || dossier.profile.lastName) {
+        <p>Me {{ dossier.profile.firstName }} {{ dossier.profile.lastName }}</p>
+        <p>{{ dossier.profile.city }}, {{ dossier.profile.country }}</p>
+        <a routerLink="/inscription/profil">Modifier mon profil</a>
+      } @else {
+        <p>Votre profil professionnel reste à compléter.</p>
+        <a routerLink="/inscription/profil">Compléter mon profil</a>
+      }
     </section>
     <section class="sheet panel">
       <h2>Cotisation annuelle</h2>

@@ -32,7 +32,8 @@ export class SpacePage {
     ? this.submission["notificationSent"] === false
       ? "Votre dossier a été soumis. L’envoi de l’e-mail de confirmation a échoué."
       : "Votre dossier a été soumis et est en cours de vérification."
-    : "";
+    : this.submission?.["profileUpdated"] ? "Vos modifications ont été enregistrées." : "";
+  readonly adminNotificationFailed = this.submission?.["adminNotified"] === false;
   error = "";
   loading = true;
   membership: Membership | null = null;

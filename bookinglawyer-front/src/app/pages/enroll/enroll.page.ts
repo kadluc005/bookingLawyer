@@ -53,7 +53,6 @@ export class EnrollPage {
         "Sélectionnez jusqu’à cinq fichiers PDF, DOCX ou TXT non vides de 5 Mo maximum chacun.";
       return;
     }
-    this.invalidate();
     this.dossier.documents = files;
     this.busy = true;
     this.notice = "";
@@ -90,12 +89,8 @@ export class EnrollPage {
       input.value = "";
       return;
     }
-    this.invalidate();
     this.dossier.photo = file;
     this.notice = "";
-  }
-  invalidate() {
-    this.dossier.confirmed = false;
   }
   go(step: number) {
     this.step = step;
@@ -111,7 +106,7 @@ export class EnrollPage {
     if (!this.checked || this.busy) return;
     this.busy = true;
     this.error = "";
-    const { firstName, lastName, country, city, phone, specialty, officeStreet, officeNumber, cvText, websiteUrl } = this.p;
+    const { firstName, lastName, country, city, phone, specialty, officeStreet, officeNumber, cvText, websiteUrl, experienceYears } = this.p;
     try {
       const changes = {
         firstName, lastName, country, city, phone, specialty,
@@ -119,17 +114,20 @@ export class EnrollPage {
         officeNumber: officeNumber || null,
         cvText: cvText || null,
         websiteUrl: websiteUrl || null,
+        experienceYears,
       };
       if (this.needsSubmission) {
-        const result = await this.session.request<{ notificationSent: boolean | null }>(
+        const result = await this.session.request<{ notificationSent: boolean | null; adminNotified: boolean | null }>(
           "/lawyers/me/submit", "POST", changes,
         );
         await this.router.navigateByUrl("/espace", {
-          state: { dossierSubmitted: true, notificationSent: result.notificationSent },
+          state: { dossierSubmitted: true, notificationSent: result.notificationSent, adminNotified: result.adminNotified },
         });
       } else {
-        await this.session.request("/lawyers/me", "PATCH", changes);
-        await this.router.navigateByUrl("/espace");
+        const result = await this.session.request<{ adminNotified: boolean | null }>("/lawyers/me", "PATCH", changes);
+        await this.router.navigateByUrl("/espace", {
+          state: { profileUpdated: true, adminNotified: result.adminNotified },
+        });
       }
     } catch (error) {
       this.error = errorMessage(error);

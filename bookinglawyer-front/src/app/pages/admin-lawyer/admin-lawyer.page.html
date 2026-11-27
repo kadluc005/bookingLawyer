@@ -6,6 +6,8 @@
       <a routerLink="/administration">◫ <span>Vue d’ensemble</span></a>
       <a class="current" routerLink="/administration/avocats">♙ <span>Avocats</span></a>
       <a routerLink="/administration" fragment="clients">♧ <span>Clients</span></a>
+      <div class="nav-unavailable"><span aria-hidden="true">▤</span><span>News</span><small>Bientôt</small></div>
+      <div class="nav-unavailable"><span aria-hidden="true">§</span><span>Pro bono</span><small>Bientôt</small></div>
       <a routerLink="/annuaire">↗ <span>Voir le site</span></a>
     </nav>
     <div class="sidebar-bottom"><span>{{ session.account()?.email }}</span><button type="button" (click)="signOut()">Déconnexion</button></div>

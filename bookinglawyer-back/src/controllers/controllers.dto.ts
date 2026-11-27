@@ -122,6 +122,12 @@ export class UpdateLawyerProfileDto {
   cvText?: string | null;
 
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(2147483647)
+  experienceYears?: number | null;
+
+  @IsOptional()
   @IsUrl({ require_protocol: true })
   @MaxLength(2048)
   websiteUrl?: string | null;
@@ -227,7 +233,6 @@ export class ContactClickDto {
 }
 
 export class PaymentMethodDto {
-  @IsOptional()
   @IsIn(['bank_transfer', 'paypal', 'cryptocurrency'])
-  method?: typeof payments.$inferInsert.method;
+  method!: typeof payments.$inferInsert.method;
 }

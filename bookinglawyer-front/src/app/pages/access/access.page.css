@@ -1,0 +1,20 @@
+:host { display: block; }
+.access-card { max-width: 700px; }
+.access-card form { display: grid; gap: 18px; }
+.access-card form label + label { margin-top: 0; }
+.access-card .sign-in { justify-self: start; margin-top: 4px; min-width: 150px; }
+.access-error { margin: 0; color: #a43529; }
+.registration { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line); }
+.registration h2 { margin: 0 0 7px; font-size: 1.15rem; }
+.registration > p { margin: 0 0 18px; color: var(--muted); font-size: .88rem; }
+.registration-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.registration-links a { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 80px; padding: 16px; border: 1px solid #d8e3ed; border-radius: 6px; color: #183954; text-decoration: none; }
+.registration-links a:hover { border-color: #6f96b5; background: #f6f9fc; }
+.registration-links strong, .registration-links small { display: block; }
+.registration-links strong { font-size: .9rem; }
+.registration-links small { margin-top: 4px; color: #6c8093; font-size: .8rem; }
+.arrow { color: #477798; font-size: 1.15rem; }
+@media (max-width: 600px) {
+  .access-card .sign-in { justify-self: stretch; }
+  .registration-links { grid-template-columns: 1fr; }
+}

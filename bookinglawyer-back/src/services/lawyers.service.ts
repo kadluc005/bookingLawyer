@@ -15,16 +15,16 @@ import {
   memberships,
   users,
   type NewLawyerProfile,
-  type NewUser,
 } from '../database/schema.js';
 import { LawyerDossierMailService } from '../mail/lawyer-dossier-mail.service.js';
+import { LawyerWorkflowMailService } from '../mail/lawyer-workflow-mail.service.js';
+import { UsersService } from './users.service.js';
 import { AuditLogsService } from './audit-logs.service.js';
 
 export type LawyerProfileUpdate = Partial<
   Omit<
     NewLawyerProfile,
     | 'userId'
-    | 'experienceYears'
     | 'reviewStatus'
     | 'submittedAt'
     | 'rejectionReason'
@@ -33,19 +33,6 @@ export type LawyerProfileUpdate = Partial<
     | 'createdAt'
     | 'updatedAt'
   >
->;
-
-export type NewLawyerAccountProfile = Omit<
-  NewLawyerProfile,
-  | 'userId'
-  | 'experienceYears'
-  | 'reviewStatus'
-  | 'submittedAt'
-  | 'rejectionReason'
-  | 'reviewedBy'
-  | 'reviewedAt'
-  | 'createdAt'
-  | 'updatedAt'
 >;
 
 export type LawyerDirectoryQuery = {
@@ -60,6 +47,22 @@ export type LawyerDirectoryQuery = {
 };
 
 const MAX_PAGE_SIZE = 100;
+const profileFieldLabels: Record<keyof LawyerProfileUpdate, string> = {
+  firstName: 'Prénom',
+  lastName: 'Nom',
+  country: 'Pays',
+  city: 'Ville',
+  phone: 'Téléphone',
+  officeCountry: 'Pays du cabinet',
+  officeCity: 'Ville du cabinet',
+  officeStreet: 'Rue du cabinet',
+  officeNumber: 'Numéro du cabinet',
+  specialty: 'Spécialité',
+  photoStorageKey: 'Photo',
+  cvText: 'Présentation professionnelle',
+  websiteUrl: 'Site web',
+  experienceYears: 'Années de pratique',
+};
 
 @Injectable()
 export class LawyersService {
@@ -68,29 +71,9 @@ export class LawyersService {
     private readonly db: NodePgDatabase,
     private readonly auditLogs: AuditLogsService,
     private readonly dossierMail: LawyerDossierMailService,
+    private readonly workflowMail: LawyerWorkflowMailService,
+    private readonly usersService: UsersService,
   ) {}
-
-  async createAccount(
-    account: Pick<NewUser, 'email' | 'passwordHash'>,
-    profile: NewLawyerAccountProfile,
-  ) {
-    return this.db.transaction(async (tx) => {
-      const [user] = await tx
-        .insert(users)
-        .values({
-          ...account,
-          role: 'lawyer',
-          status: 'pending_email_verification',
-        })
-        .returning();
-      const [lawyerProfile] = await tx
-        .insert(lawyerProfiles)
-        .values({ ...profile, userId: user.id })
-        .returning();
-
-      return { user, profile: lawyerProfile };
-    });
-  }
 
   async findProfile(userId: string) {
     const [profile] = await this.db
@@ -98,89 +81,99 @@ export class LawyersService {
       .from(lawyerProfiles)
       .where(eq(lawyerProfiles.userId, userId));
 
-    if (!profile) {
-      throw new NotFoundException('Lawyer profile not found.');
-    }
-
-    return profile;
+    return profile ?? null;
   }
 
   async updateProfile(userId: string, changes: LawyerProfileUpdate) {
-    const [profile] = await this.db
-      .update(lawyerProfiles)
-      .set({ ...changes, updatedAt: new Date() })
-      .where(eq(lawyerProfiles.userId, userId))
-      .returning();
-
-    if (!profile) {
-      throw new NotFoundException('Lawyer profile not found.');
-    }
-
-    return profile;
+    const result = await this.db.transaction(async (tx) => {
+      const { profile, email } = await this.lockDossier(tx, userId);
+      const fields = changedProfileFields(profile, changes);
+      if (!fields.length) return { profile, email, fields };
+      const [updated] = await tx.update(lawyerProfiles)
+        .set({ ...changes, updatedAt: new Date() })
+        .where(eq(lawyerProfiles.userId, userId))
+        .returning();
+      await this.auditLogs.record({
+        actorUserId: userId,
+        action: 'lawyer.profile.updated',
+        entityType: 'lawyer_profile',
+        entityId: userId,
+        metadata: { changedFields: fields },
+      }, tx);
+      return { profile: updated, email, fields };
+    });
+    const adminNotified = result.fields.length
+      ? await this.notifyProfileChange(result.email, result.fields)
+      : null;
+    return { ...result.profile, adminNotified };
   }
 
   async submitProfile(lawyerUserId: string, changes: LawyerProfileUpdate) {
     const result = await this.db.transaction(async (tx) => {
-      const { profile, email } = await this.lockDossier(tx, lawyerUserId);
-      if (profile.reviewStatus === 'approved') {
+      const [lawyer] = await tx.select({ email: users.email }).from(users)
+        .where(and(eq(users.id, lawyerUserId), eq(users.role, 'lawyer'), eq(users.status, 'active')))
+        .for('update');
+      if (!lawyer) throw new NotFoundException('Compte avocat actif introuvable.');
+      const [profile] = await tx.select().from(lawyerProfiles)
+        .where(eq(lawyerProfiles.userId, lawyerUserId)).for('update');
+      const email = lawyer.email;
+      if (profile?.reviewStatus === 'approved') {
         throw new ConflictException('Ce dossier est déjà approuvé.');
       }
-      if (profile.submittedAt && profile.reviewStatus === 'pending_review') {
-        return { profile, email, submitted: false };
+      if (profile?.submittedAt && profile.reviewStatus === 'pending_review') {
+        return { profile, email, submitted: false, fields: [] };
       }
+      await this.requireActiveMembership(tx, lawyerUserId);
 
-      const providedChanges = Object.fromEntries(
-        Object.entries(changes).filter(([, value]) => value !== undefined),
-      );
-      const proposed = { ...profile, ...providedChanges };
-      const requiredFields = [
-        proposed.firstName,
-        proposed.lastName,
-        proposed.country,
-        proposed.city,
-        proposed.phone,
-        proposed.officeStreet,
-        proposed.officeNumber,
-        proposed.specialty,
-      ];
-      if (requiredFields.some((value) => !value?.trim())) {
-        throw new BadRequestException(
-          'Complétez les champs obligatoires du profil avant de soumettre le dossier.',
-        );
+      const fields = changedProfileFields(profile, changes);
+      const proposed = {
+        ...profile,
+        ...Object.fromEntries(
+          Object.entries(changes).filter(([, value]) => value !== undefined),
+        ),
+      };
+      const { firstName, lastName, country, city, phone, specialty, officeStreet, officeNumber } = proposed;
+      if (
+        !firstName?.trim() || !lastName?.trim() || !country?.trim() || !city?.trim() ||
+        !phone?.trim() || !specialty || !officeStreet?.trim() || !officeNumber?.trim()
+      ) {
+        throw new BadRequestException('Complétez les champs obligatoires du profil avant de soumettre le dossier.');
       }
 
       const now = new Date();
-      const [submitted] = await tx
-        .update(lawyerProfiles)
-        .set({
-          ...changes,
-          submittedAt: now,
-          reviewStatus: 'pending_review',
-          rejectionReason: null,
-          reviewedBy: null,
-          reviewedAt: null,
-          updatedAt: now,
-        })
-        .where(eq(lawyerProfiles.userId, lawyerUserId))
-        .returning();
+      const submission = {
+        submittedAt: now,
+        reviewStatus: 'pending_review' as const,
+        rejectionReason: null,
+        reviewedBy: null,
+        reviewedAt: null,
+        updatedAt: now,
+      };
+      const [submitted] = profile
+        ? await tx.update(lawyerProfiles).set({ ...changes, ...submission })
+            .where(eq(lawyerProfiles.userId, lawyerUserId)).returning()
+        : await tx.insert(lawyerProfiles).values({
+            ...changes, userId: lawyerUserId, firstName, lastName, country, city,
+            phone, specialty, ...submission,
+          }).returning();
       await this.auditLogs.record(
         {
           actorUserId: lawyerUserId,
           action: 'lawyer.profile.submitted',
           entityType: 'lawyer_profile',
           entityId: lawyerUserId,
+          metadata: { changedFields: fields },
         },
         tx,
       );
-      return { profile: submitted, email, submitted: true };
+      return { profile: submitted, email, submitted: true, fields };
     });
 
-    return {
-      profile: result.profile,
-      notificationSent: result.submitted
-        ? await this.dossierMail.send(result.email, { kind: 'submitted' })
-        : null,
-    };
+    const [notificationSent, adminNotified] = await Promise.all([
+      result.submitted ? this.dossierMail.send(result.email, { kind: 'submitted' }) : null,
+      result.fields.length ? this.notifyProfileChange(result.email, result.fields) : null,
+    ]);
+    return { profile: result.profile, notificationSent, adminNotified };
   }
 
   async reviewProfile(
@@ -217,6 +210,8 @@ export class LawyersService {
         return { profile, email, changed: false };
       }
 
+      if (decision === 'approved') await this.requireActiveMembership(tx, lawyerUserId);
+
       const now = new Date();
       const [reviewed] = await tx
         .update(lawyerProfiles)
@@ -252,6 +247,27 @@ export class LawyersService {
     return { ...result.profile, notificationSent };
   }
 
+  private async requireActiveMembership(db: Pick<NodePgDatabase, 'select'>, userId: string) {
+    const [membership] = await db.select({ id: memberships.id }).from(memberships)
+      .where(and(
+        eq(memberships.lawyerUserId, userId),
+        eq(memberships.status, 'active'),
+        gt(memberships.endsAt, new Date()),
+      )).limit(1);
+    if (!membership) throw new ConflictException('Une cotisation active est requise.');
+  }
+
+  private async notifyProfileChange(
+    email: string,
+    fields: (keyof LawyerProfileUpdate)[],
+  ) {
+    const admins = await this.usersService.activeAdminEmails();
+    return this.workflowMail.send('profile', admins, {
+      email,
+      fields: fields.map((field) => profileFieldLabels[field]),
+    });
+  }
+
   private async lockDossier(db: Pick<NodePgDatabase, 'select'>, lawyerUserId: string) {
     const [dossier] = await db
       .select({ profile: lawyerProfiles, email: users.email })
@@ -267,7 +283,7 @@ export class LawyersService {
     const [rows, counts] = await Promise.all([
       this.db
         .select({
-          lawyerId: lawyerProfiles.userId,
+          lawyerId: users.id,
           firstName: lawyerProfiles.firstName,
           lastName: lawyerProfiles.lastName,
           email: users.email,
@@ -277,11 +293,13 @@ export class LawyersService {
           reviewStatus: lawyerProfiles.reviewStatus,
           submittedAt: lawyerProfiles.submittedAt,
           accountStatus: users.status,
+          hasActiveMembership: exists(this.db.select({ id: memberships.id }).from(memberships)
+            .where(and(eq(memberships.lawyerUserId, users.id), eq(memberships.status, 'active'), gt(memberships.endsAt, new Date())))).mapWith(Boolean),
         })
-        .from(lawyerProfiles)
-        .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+        .from(users)
+        .leftJoin(lawyerProfiles, eq(users.id, lawyerProfiles.userId))
         .where(eq(users.role, 'lawyer'))
-        .orderBy(asc(lawyerProfiles.lastName), asc(lawyerProfiles.firstName), asc(lawyerProfiles.userId))
+        .orderBy(asc(lawyerProfiles.lastName), asc(lawyerProfiles.firstName), asc(users.id))
         .limit(limit)
         .offset(offset),
       this.db
@@ -289,8 +307,8 @@ export class LawyersService {
           total: sql<number>`count(*)::int`,
           pending: sql<number>`count(*) filter (where ${lawyerProfiles.reviewStatus} = 'pending_review' and ${lawyerProfiles.submittedAt} is not null)::int`,
         })
-        .from(lawyerProfiles)
-        .innerJoin(users, eq(users.id, lawyerProfiles.userId))
+        .from(users)
+        .leftJoin(lawyerProfiles, eq(users.id, lawyerProfiles.userId))
         .where(eq(users.role, 'lawyer')),
     ]);
     return { lawyers: rows, total: counts[0].total, pending: counts[0].pending };
@@ -466,4 +484,14 @@ export class LawyersService {
       ),
     ];
   }
+}
+
+function changedProfileFields(
+  profile: typeof lawyerProfiles.$inferSelect | undefined,
+  changes: LawyerProfileUpdate,
+) {
+  const fields = Object.keys(changes) as (keyof LawyerProfileUpdate)[];
+  return fields.filter(
+    (field) => changes[field] !== undefined && changes[field] !== profile?.[field],
+  );
 }

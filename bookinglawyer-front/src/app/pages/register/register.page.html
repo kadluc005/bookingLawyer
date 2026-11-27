@@ -1,47 +1,20 @@
 <p class="kicker">Espace avocat</p>
 <h1>Créer mon compte avocat</h1>
-<section class="sheet panel detail">
-  <form #form="ngForm" (ngSubmit)="register(form)">
-    <label>
-      Adresse e-mail
-      <input type="email" name="email" autocomplete="email" [(ngModel)]="profile.email"
-             required email maxlength="320" />
-    </label>
-    <div class="fields">
-      <label>
-        Mot de passe (8 caractères minimum)
-        <input type="password" name="password" autocomplete="new-password"
-               [(ngModel)]="password" required minlength="12" maxlength="128" />
-      </label>
-      <label>
-        Confirmer le mot de passe
-        <input type="password" name="confirmation" autocomplete="new-password"
-               [(ngModel)]="confirmation" required />
-      </label>
-    </div>
-    <div class="fields">
-      <label>Prénom <input name="firstName" [(ngModel)]="profile.firstName" required maxlength="120" /></label>
-      <label>Nom <input name="lastName" [(ngModel)]="profile.lastName" required maxlength="120" /></label>
-      <label>Pays <input name="country" [(ngModel)]="profile.country" required maxlength="120" /></label>
-      <label>Ville <input name="city" [(ngModel)]="profile.city" required maxlength="120" /></label>
-      <label>Téléphone <input name="phone" type="tel" [(ngModel)]="profile.phone" required maxlength="32" /></label>
-      <label>Spécialité
-        <select name="specialty" [(ngModel)]="profile.specialty" required>
-          <option value="">Choisir</option>
-          @for (choice of choices; track choice[0]) {
-            <option [value]="choice[0]">{{ choice[1] }}</option>
-          }
-        </select>
-      </label>
-    </div>
-    @if (error) { <p role="alert">{{ error }}</p> }
-    @if (form.submitted) {
-      @if (form.invalid) {
-        <p role="alert">Vérifiez l’adresse e-mail et les champs de mot de passe.</p>
-      } @else if (password !== confirmation) {
-        <p role="alert">Les mots de passe doivent correspondre.</p>
-      }
+<div class="access-background">
+  <section class="sheet panel detail">
+    @if (requested) {
+      <p role="status">Vérifiez votre boîte de réception. Si l’adresse est disponible, vous recevrez vos identifiants temporaires.</p>
+      <a class="button" routerLink="/connexion">Se connecter</a>
+      <p><a routerLink="/verification-email">Renvoyer mes identifiants temporaires</a></p>
+    } @else {
+      <p>Saisissez votre adresse e-mail pour recevoir vos identifiants de première connexion. Votre mot de passe temporaire sera valable 24 heures et devra être remplacé lors de votre connexion.</p>
+      <form #form="ngForm" (ngSubmit)="register(form)">
+        <label>Adresse e-mail
+          <input type="email" name="email" autocomplete="email" [(ngModel)]="email" required email maxlength="320" />
+        </label>
+        @if (error) { <p role="alert">{{ error }}</p> }
+        <button type="submit" [disabled]="form.invalid || busy">Recevoir mes identifiants</button>
+      </form>
     }
-    <button type="submit" [disabled]="busy">Créer mon compte</button>
-  </form>
-</section>
+  </section>
+</div>

@@ -63,6 +63,7 @@
         </section>
       </div>
 
+      @if (session.account()?.role === 'client') {
       <aside class="contact-card">
         <p class="section-label">PRENDRE CONTACT</p>
         <h2>Contacter le cabinet</h2>
@@ -83,10 +84,16 @@
         </div>
         @if (contactError) { <p class="contact-error" role="alert">{{ contactError }}</p> }
       </aside>
+      } @else {
+        <aside class="contact-card">
+          <h2>Coordonnées du cabinet</h2>
+          <p>L’accès aux coordonnées est réservé aux comptes clients.</p>
+        </aside>
+      }
     </div>
   </article>
-} @else if (session.account()?.role !== 'client') {
-  <section class="state-message"><h1>Consulter le profil</h1><p>Connectez-vous à votre compte client pour consulter cette fiche.</p><a class="button" routerLink="/connexion" [queryParams]="{ avocat: id }">Se connecter comme client</a></section>
+} @else if (!directory.canView()) {
+  <section class="state-message"><h1>Consulter le profil</h1><p>Connectez-vous à votre compte client ou avocat pour consulter cette fiche.</p><a class="button" routerLink="/connexion" [queryParams]="{ avocat: id }">Se connecter</a></section>
 } @else if (busy) {
   <p class="state-message" role="status">Chargement du profil…</p>
 } @else if (!error) {

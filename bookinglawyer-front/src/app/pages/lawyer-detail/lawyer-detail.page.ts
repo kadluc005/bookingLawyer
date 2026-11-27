@@ -14,7 +14,7 @@ import { LawyerAvatarComponent } from "../../components/lawyer-avatar/lawyer-ava
   styleUrl: "./lawyer-detail.page.css",
 })
 export class DetailPage {
-  private readonly directory = inject(DirectoryService);
+  readonly directory = inject(DirectoryService);
   readonly id = inject(ActivatedRoute).snapshot.paramMap.get("id");
   readonly session = inject(SessionService);
   readonly labels = specialties;
@@ -26,7 +26,7 @@ export class DetailPage {
   contactError = "";
 
   async ngOnInit() {
-    if (this.session.account()?.role !== "client") return;
+    if (!this.directory.canView()) return;
     this.busy = true;
     try {
       this.profile = (await this.directory.list()).find(entry => entry.id === this.id);
@@ -38,7 +38,7 @@ export class DetailPage {
   }
 
   async reveal(channel: ContactChannel) {
-    if (!this.profile || this.contactBusy || this.revealed[channel]) return;
+    if (this.session.account()?.role !== "client" || !this.profile || this.contactBusy || this.revealed[channel]) return;
     this.contactBusy = channel;
     this.contactError = "";
     try {

@@ -46,8 +46,6 @@
       Relisez les informations proposées et complétez les champs obligatoires.
     </p>
     <form
-      (input)="invalidate()"
-      (change)="invalidate()"
       #form="ngForm"
       (ngSubmit)="form.valid && go(3)"
     >

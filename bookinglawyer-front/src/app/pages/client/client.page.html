@@ -34,6 +34,7 @@
     </div>
   </section>
 } @else {
+  <div [class.access-background]="registering">
   <form class="sheet panel detail edit-form" #form="ngForm" (ngSubmit)="save(form)" (input)="saved = false">
     @if (!registering) {
       <div class="edit-heading"><h2>Modifier mes informations</h2><p>Actualisez vos coordonnées, puis enregistrez vos modifications.</p></div>
@@ -60,4 +61,5 @@
       </div>
     </fieldset>
   </form>
+  </div>
 }

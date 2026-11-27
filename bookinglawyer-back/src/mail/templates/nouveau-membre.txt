@@ -1,0 +1,3 @@
+Le compte avocat {{email}} a activé sa cotisation annuelle de {{amount}}. Le paiement a été confirmé en mode simulation.
+
+Référence {{reference}}. Le dossier pourra être validé après sa soumission par l’avocat.

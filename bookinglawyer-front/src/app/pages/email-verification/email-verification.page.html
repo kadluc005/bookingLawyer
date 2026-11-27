@@ -1,4 +1,4 @@
-<h1>Confirmer votre adresse e-mail</h1>
+<h1>{{ validToken || incompleteLink ? "Confirmer votre adresse e-mail" : "Renvoyer vos identifiants" }}</h1>
 <section class="sheet panel detail">
   @if (confirmed) {
     <p role="status">Votre compte est actif. Connectez-vous pour continuer votre inscription.</p>
@@ -9,21 +9,19 @@
       <button type="button" [disabled]="busy" (click)="confirm()">Confirmer mon adresse</button>
     } @else if (incompleteLink) {
       <p role="alert">Le lien est incomplet. Ouvrez le lien depuis l’e-mail ou demandez un nouveau lien.</p>
-    } @else if (registrationSendFailed) {
-      <p>Votre compte a été créé. L’envoi du message a échoué. Vous pouvez demander un nouveau lien.</p>
     } @else {
-      <p>Ouvrez le lien de confirmation reçu par e-mail. Il est valable 24 heures.</p>
+      <p>Indiquez l’adresse utilisée lors de votre inscription.</p>
     }
 
     @if (error) { <p role="alert">{{ error }}</p> }
     @if (notice) { <p role="status">{{ notice }}</p> }
 
     <form #form="ngForm" (ngSubmit)="resend()">
-      <h2>Demander un nouveau lien</h2>
+
       <label>Adresse e-mail
         <input type="email" name="email" [(ngModel)]="email" required email maxlength="320" autocomplete="email" />
       </label>
-      <button type="submit" [disabled]="form.invalid || busy">Renvoyer le lien</button>
+      <button type="submit" [disabled]="form.invalid || busy">Renvoyer l’e-mail</button>
     </form>
   }
 </section>

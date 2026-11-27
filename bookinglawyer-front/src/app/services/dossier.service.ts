@@ -29,7 +29,6 @@ export class DossierService {
   profile = blank();
   documents: File[] = [];
   photo?: File;
-  confirmed = false;
   submittedAt: string | null = null;
   rejectionReason: string | null = null;
   reviewStatus: ReviewStatus = "pending_review";
@@ -37,13 +36,12 @@ export class DossierService {
   async load(session: SessionService) {
     const email = session.account()?.email ?? "";
     if (this.accountEmail !== email) this.clear();
-    const profile = await session.request<Partial<Profile> & { reviewStatus: ReviewStatus; submittedAt: string | null; rejectionReason: string | null }>("/lawyers/me");
+    const profile = await session.request<Partial<Profile> & { reviewStatus: ReviewStatus; submittedAt: string | null; rejectionReason: string | null } | null>("/lawyers/me");
     this.accountEmail = email;
-    this.reviewStatus = profile.reviewStatus;
-    this.submittedAt = profile.submittedAt;
-    this.rejectionReason = profile.rejectionReason;
-    this.confirmed = Boolean(profile.submittedAt);
-    this.profile = { ...blank(), ...profile, email, officeStreet: profile.officeStreet ?? "", officeNumber: profile.officeNumber ?? "", cvText: profile.cvText ?? "", websiteUrl: profile.websiteUrl ?? "" };
+    this.reviewStatus = profile?.reviewStatus ?? "pending_review";
+    this.submittedAt = profile?.submittedAt ?? null;
+    this.rejectionReason = profile?.rejectionReason ?? null;
+    this.profile = { ...blank(), ...profile, email, officeStreet: profile?.officeStreet ?? "", officeNumber: profile?.officeNumber ?? "", cvText: profile?.cvText ?? "", websiteUrl: profile?.websiteUrl ?? "" };
   }
 
   clear() {
@@ -51,7 +49,6 @@ export class DossierService {
     this.profile = blank();
     this.documents = [];
     this.photo = undefined;
-    this.confirmed = false;
     this.submittedAt = null;
     this.rejectionReason = null;
     this.reviewStatus = "pending_review";

@@ -8,6 +8,7 @@ import {
   SmtpTransport,
 } from '@nestjs/mail';
 import { LawyerDossierMailService } from './lawyer-dossier-mail.service.js';
+import { LawyerWorkflowMailService } from './lawyer-workflow-mail.service.js';
 
 @Module({
   imports: [
@@ -49,7 +50,7 @@ import { LawyerDossierMailService } from './lawyer-dossier-mail.service.js';
       },
     }),
   ],
-  providers: [LawyerDossierMailService],
-  exports: [LawyerDossierMailService],
+  providers: [LawyerDossierMailService, LawyerWorkflowMailService],
+  exports: [LawyerDossierMailService, LawyerWorkflowMailService],
 })
 export class BookingMailModule {}

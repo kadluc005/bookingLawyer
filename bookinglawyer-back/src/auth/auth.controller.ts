@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { Public } from '@nestjs/authentication';
 import { Throttle } from '@nestjs/throttler';
 import {
+  ChangeTemporaryPasswordDto,
   ConfirmEmailDto,
   RegisterClientDto,
   RegisterLawyerDto,
@@ -23,8 +24,14 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   registerLawyer(@Body() body: RegisterLawyerDto) {
-    const { email, password, ...profile } = body;
-    return this.authService.registerLawyer(email, password, profile);
+    return this.authService.registerLawyer(body.email);
+  }
+
+  @Post('temporary-password/change')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  changeTemporaryPassword(@Body() body: ChangeTemporaryPasswordDto) {
+    return this.authService.changeTemporaryPassword(body.email, body.password, body.newPassword);
   }
 
   @Post('register/client')

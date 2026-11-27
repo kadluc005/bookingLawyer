@@ -7,15 +7,16 @@ export type MembershipStatus = "pending_payment" | "active" | "expired" | "cance
 
 export interface AdminLawyer {
   lawyerId: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string;
-  city: string;
-  country: string;
-  specialty: Specialty;
-  reviewStatus: ReviewStatus;
+  city: string | null;
+  country: string | null;
+  specialty: Specialty | null;
+  reviewStatus: ReviewStatus | null;
   submittedAt: string | null;
   accountStatus: string;
+  hasActiveMembership: boolean;
 }
 
 export interface AdminLawyerDetail {

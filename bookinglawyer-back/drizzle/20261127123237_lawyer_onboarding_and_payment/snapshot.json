@@ -1,0 +1,113 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "4f33c277-ff4a-4f97-a213-04a1089dbec5",
+  "prevIds": [
+    "d3bdc703-f27e-4b7c-8b1d-d7009ab810ee"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "memberships"
+      ],
+      "writes": [
+        "s|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "e|fk|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey",
+        "n|con|public.memberships.memberships_lawyer_user_id_lawyer_profiles_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.memberships",
+        "n|sch|public",
+        "e|col|public.memberships.lawyer_user_id"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "users",
+        "temporary_password_expires_at"
+      ],
+      "writes": [
+        "s|col|public.users.temporary_password_expires_at",
+        "n|col|public.users.temporary_password_expires_at",
+        "e|col|public.users.temporary_password_expires_at"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "memberships"
+      ],
+      "writes": [
+        "s|fk|public.memberships.memberships_lawyer_user_id_users_id_fkey",
+        "n|fk|public.memberships.memberships_lawyer_user_id_users_id_fkey",
+        "e|fk|public.memberships.memberships_lawyer_user_id_users_id_fkey",
+        "n|con|public.memberships.memberships_lawyer_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.memberships",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.memberships.lawyer_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "users",
+        "name": "temporary_password_expires_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "memberships",
+        "name": "memberships_lawyer_user_id_users_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "lawyer_user_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "users",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"memberships\",\"memberships_lawyer_user_id_lawyer_profiles_user_id_fkey\"]"
+    }
+  ]
+}

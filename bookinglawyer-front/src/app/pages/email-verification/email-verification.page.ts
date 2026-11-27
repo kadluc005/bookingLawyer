@@ -1,6 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { api, errorMessage } from "../../services/api.service";
 
 @Component({
@@ -9,13 +9,10 @@ import { api, errorMessage } from "../../services/api.service";
 })
 export class EmailVerificationPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly registration = this.router.currentNavigation()?.extras.state;
   private readonly token = this.route.snapshot.fragment;
   readonly validToken = /^[A-Za-z0-9_-]{43}$/.test(this.token ?? "");
   readonly incompleteLink = this.token !== null && !this.validToken;
-  readonly registrationSendFailed = this.registration?.["verificationEmailSent"] === false;
-  email = typeof this.registration?.["email"] === "string" ? this.registration["email"] : "";
+  email = "";
   confirmed = false;
   busy = false;
   error = "";
@@ -45,7 +42,7 @@ export class EmailVerificationPage {
         method: "POST",
         body: { email: this.email },
       });
-      this.notice = "Si un compte avocat attend une confirmation à cette adresse, un lien pourra vous être envoyé.";
+      this.notice = "Si un compte avocat attend une activation, vérifiez votre boîte de réception. Attendez une minute entre deux demandes.";
     } catch (error) {
       this.error = errorMessage(error);
     } finally {

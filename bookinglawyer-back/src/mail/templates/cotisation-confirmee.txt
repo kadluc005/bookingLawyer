@@ -1,0 +1,5 @@
+Bienvenue dans le réseau BookingLawyer. Votre cotisation annuelle est active jusqu’au {{endsAt}}.
+
+Complétez et soumettez votre dossier. Votre profil deviendra visible dans l’annuaire après approbation par un administrateur.
+
+Paiement simulé · Référence {{reference}}

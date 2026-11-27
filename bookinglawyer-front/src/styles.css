@@ -14,6 +14,11 @@
 body {
   margin: 0;
 }
+.access-background {
+  padding: clamp(18px, 3vw, 32px);
+  border-radius: 8px;
+  background: linear-gradient(100deg, #0b2d4ecc 15%, #163e61a3 100%), url('/assets/legal-hero.png') center / cover;
+}
 a {
   color: inherit;
 }
@@ -466,6 +471,7 @@ footer nav a:hover { text-decoration: underline; }
   }
 }
 @media (max-width: 700px) {
+  .access-background { padding: 14px; }
   .footer-content { flex-direction: column; }
   footer nav { align-items: flex-start; flex-direction: row; justify-content: flex-start; padding: 0; }
   .filter,

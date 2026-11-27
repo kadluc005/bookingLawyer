@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { computed, inject, Injectable } from "@angular/core";
 import { Lawyer, LawyerDocument } from "../models/lawyer.model";
 import { SessionService } from "./session.service";
 
@@ -22,6 +22,10 @@ interface DirectoryEntry {
 @Injectable({ providedIn: "root" })
 export class DirectoryService {
   private readonly session = inject(SessionService);
+  readonly canView = computed(() => {
+    const role = this.session.account()?.role;
+    return role === "client" || role === "lawyer";
+  });
 
   async list(): Promise<Lawyer[]> {
     const entries: Lawyer[] = [];

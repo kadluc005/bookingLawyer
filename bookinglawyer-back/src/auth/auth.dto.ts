@@ -1,15 +1,11 @@
 import {
   IsEmail,
-  IsIn,
-  IsOptional,
   IsString,
-  IsUrl,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import type { NewClientAccountProfile } from '../services/clients.service.js';
-import type { NewLawyerAccountProfile } from '../services/lawyers.service.js';
 
 export class SignInDto {
   @IsEmail()
@@ -47,67 +43,13 @@ export class SignUpDto {
   password!: string;
 }
 
-export class RegisterLawyerDto
-  extends SignUpDto
-  implements NewLawyerAccountProfile
-{
+export class RegisterLawyerDto extends ResendVerificationEmailDto {}
+
+export class ChangeTemporaryPasswordDto extends SignInDto {
   @IsString()
-  @MinLength(1)
-  @MaxLength(120)
-  firstName!: string;
-
-  @IsString()
-  @MinLength(1)
-  @MaxLength(120)
-  lastName!: string;
-
-  @IsString()
-  @MinLength(1)
-  @MaxLength(120)
-  country!: string;
-
-  @IsString()
-  @MinLength(1)
-  @MaxLength(120)
-  city!: string;
-
-  @IsString()
-  @MinLength(1)
-  @MaxLength(32)
-  phone!: string;
-
-  @IsIn(['criminal_law', 'civil_law', 'arbitration', 'cybercrime'])
-  specialty!: NewLawyerAccountProfile['specialty'];
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(120)
-  officeCountry?: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(120)
-  officeCity?: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  officeStreet?: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(40)
-  officeNumber?: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(50000)
-  cvText?: string | null;
-
-  @IsOptional()
-  @IsUrl({ require_protocol: true })
-  @MaxLength(2048)
-  websiteUrl?: string | null;
+  @MinLength(12)
+  @MaxLength(128)
+  newPassword!: string;
 }
 
 export class RegisterClientDto

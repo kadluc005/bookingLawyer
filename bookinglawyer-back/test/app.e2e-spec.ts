@@ -1,8 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { TokenService } from '@nestjs/authentication';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
+import { vi } from 'vitest';
 import { AppModule } from './../src/app.module.js';
+import { LawyersService } from '../src/services/lawyers.service.js';
+import { UsersService } from '../src/services/users.service.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -32,6 +36,38 @@ describe('AppController (e2e)', () => {
 
   it('requires authentication for the lawyer directory', () => {
     return request(app.getHttpServer()).get('/lawyers').expect(401);
+  });
+
+  it.each([
+    ['client', 200],
+    ['lawyer', 200],
+    ['admin', 403],
+  ] as const)('applies the directory permissions for a %s account', async (role, status) => {
+    const userId = '00000000-0000-4000-8000-000000000010';
+    vi.spyOn(app.get(UsersService), 'findById').mockResolvedValue({
+      id: userId,
+      email: 'directory@example.test',
+      role,
+      status: 'active',
+      emailVerifiedAt: null,
+    });
+    vi.spyOn(app.get(LawyersService), 'findVisibleDirectory').mockResolvedValue([]);
+    const { accessToken } = await app.get(TokenService).issue(userId, {
+      method: 'password',
+    });
+    const authorization = `Bearer ${accessToken}`;
+    await request(app.getHttpServer())
+      .get('/lawyers')
+      .set('Authorization', authorization)
+      .expect(status);
+
+    if (role === 'lawyer') {
+      await request(app.getHttpServer())
+        .post('/lawyers/00000000-0000-4000-8000-000000000011/contact')
+        .set('Authorization', authorization)
+        .send({ channel: 'email' })
+        .expect(403);
+    }
   });
 
   it('requires authentication for the admin lawyer list and details', async () => {

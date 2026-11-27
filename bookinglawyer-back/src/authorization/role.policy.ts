@@ -15,6 +15,10 @@ export class RolePolicy {
     return user?.role === 'client';
   }
 
+  viewLawyerDirectory(user: AuthenticatedUser | null) {
+    return user?.role === 'client' || user?.role === 'lawyer';
+  }
+
   admin(user: AuthenticatedUser | null) {
     return user?.role === 'admin';
   }

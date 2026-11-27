@@ -1,0 +1,7 @@
+Cotisation annuelle BookingLawyer pour {{email}}
+
+Référence {{reference}}
+Montant {{amount}}
+Mode choisi {{method}}
+
+Paiement simulé. Aucun versement ni prélèvement requis.

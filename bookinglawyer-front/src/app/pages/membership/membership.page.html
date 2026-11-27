@@ -1,25 +1,34 @@
-<a class="back" routerLink="/espace">← Mon dossier</a>
+<a class="back" routerLink="/espace">← Tableau de bord</a>
 <h1>Cotisation annuelle</h1>
 @if (error) { <p role="alert">{{ error }}</p> }
 @if (loading) {
   <p role="status">Chargement…</p>
-} @else if (!loadFailed) {
+} @else if (loadFailed) {
+  <button type="button" class="secondary" (click)="load()">Réessayer</button>
+} @else {
   <section class="sheet panel">
     @if (membership?.status === 'active') {
-      <h2>Cotisation active</h2>
+      <h2>{{ justActivated ? 'Félicitations, votre cotisation est active !' : 'Cotisation active' }}</h2>
       <p>Du {{ membership?.startsAt | date:'dd/MM/yyyy':'+0000' }} au {{ membership?.endsAt | date:'dd/MM/yyyy':'+0000' }}.</p>
-      <p>Ton profil apparaît dans l’annuaire après validation administrative.</p>
-    } @else if (dossier.confirmed || membership) {
-      @if (membership?.status === 'expired') {
-        <p>Ta cotisation est arrivée à échéance le {{ membership?.endsAt | date:'dd/MM/yyyy':'+0000' }}.</p>
-      }
-      <p>La cotisation démarre dès son enregistrement et dure un an. Aucun paiement ne sera prélevé.</p>
-      <button type="button" [disabled]="busy" (click)="save()">
-        {{ membership?.status === 'expired' ? 'Renouveler la cotisation' : 'Enregistrer la cotisation' }}
-      </button>
+      @if (emailWarning) { <p role="alert">{{ emailWarning }}</p> }
+      @if (adminWarning) { <p role="alert">{{ adminWarning }}</p> }
+      @if (justActivated) { <p role="status">Votre inscription est enregistrée. Le paiement a été simulé et aucun montant n’a été prélevé.</p> }
+      <p>Vous pouvez compléter votre dossier pour la validation administrative.</p>
+      <a class="button" routerLink="/inscription/profil">Compléter mon dossier</a>
     } @else {
-      <p>Confirme d’abord ton profil pour enregistrer ta cotisation.</p>
-      <a class="button" routerLink="/inscription/profil">Configurer mon profil</a>
+      <h2>100 € par an</h2>
+      <p>Choisissez un mode de paiement pour recevoir votre facture pro forma. Cette confirmation simule le paiement et aucun montant ne sera prélevé.</p>
+      <form (ngSubmit)="save()">
+        <label>Mode de paiement
+          <select name="method" [(ngModel)]="method" required>
+            <option value="">Choisir un mode de paiement</option>
+            @for (option of methods; track option[0]) {
+              <option [value]="option[0]">{{ option[1] }}</option>
+            }
+          </select>
+        </label>
+        <button type="submit" [disabled]="!method || busy">{{ busy ? 'Confirmation…' : 'Confirmer mon choix' }}</button>
+      </form>
     }
   </section>
 }

@@ -65,6 +65,7 @@ export const users = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     email: varchar('email', { length: 320 }).notNull(),
     passwordHash: text('password_hash').notNull(),
+    temporaryPasswordExpiresAt: timestamp('temporary_password_expires_at', { withTimezone: true }),
     role: userRoleEnum().notNull(),
     status: accountStatusEnum().notNull().default('pending_email_verification'),
     emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
@@ -252,7 +253,7 @@ export const memberships = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     lawyerUserId: uuid('lawyer_user_id')
       .notNull()
-      .references(() => lawyerProfiles.userId, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
     status: membershipStatusEnum().notNull().default('pending_payment'),
     amount: numeric('amount', { precision: 10, scale: 2 }).notNull(),
     currency: varchar('currency', { length: 3 }).notNull().default('EUR'),

@@ -7,8 +7,10 @@
 .admin-menu-toggle { display: none; }
 .sidebar-label { margin: 24px 8px 0; color: #7e94ab; font-size: .65rem; font-weight: 750; letter-spacing: .12em; }
 .sidebar nav { width: auto; margin: 0; min-height: 0; display: grid; gap: 5px; }
-.sidebar nav a { display: flex; align-items: center; gap: 13px; padding: 11px 13px; border-radius: 7px; color: #c2d0df; text-decoration: none; font-size: .9rem; }
+.sidebar nav a, .nav-unavailable { display: flex; align-items: center; gap: 13px; padding: 11px 13px; border-radius: 7px; color: #c2d0df; text-decoration: none; font-size: .9rem; }
 .sidebar nav a.current, .sidebar nav a:hover { background: #203c5a; color: white; }
+.nav-unavailable { color: #a6b6c7; }
+.nav-unavailable small { margin-left: auto; color: #a6b6c7; font-size: .7rem; }
 .sidebar-bottom { margin-top: auto; display: grid; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #35495d; font-size: .8rem; overflow-wrap: anywhere; }
 .sidebar-bottom button { justify-content: flex-start; padding: 0; border: 0; background: transparent; color: #fff; }
 .workspace { min-width: 0; padding: 42px clamp(24px, 4vw, 65px) 70px; }
@@ -54,6 +56,9 @@ td small { display: block; color: #8794a4; }
 .pagination, .pagination > div { display: flex; align-items: center; gap: 8px; }
 .pagination { justify-content: space-between; color: #728396; font-size: .8rem; }
 .pagination button { padding: 8px 12px; font-size: .8rem; }
+@media (min-width: 701px) and (min-height: 600px) {
+  .sidebar { position: sticky; top: 0; align-self: start; height: 100vh; height: 100dvh; }
+}
 @media (max-width: 1100px) { .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) {
   .admin-shell { grid-template-columns: 1fr; }
@@ -62,7 +67,7 @@ td small { display: block; color: #8794a4; }
   .admin-menu-toggle { display: inline-flex; gap: 8px; min-height: 44px; padding: 8px 12px; color: white; background: #203c5a; border-color: #456582; }
   .sidebar nav { display: none; width: 100%; gap: 3px; padding: 0; }
   .sidebar nav.is-open { display: grid; }
-  .sidebar nav a { min-height: 44px; font-size: .9rem; padding: 10px; }
+  .sidebar nav a, .nav-unavailable { min-height: 44px; font-size: .9rem; padding: 10px; }
   .sidebar-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin: 0; }
   .workspace { padding: 28px 16px 45px; }
   .workspace-header { align-items: flex-start; flex-wrap: wrap; }

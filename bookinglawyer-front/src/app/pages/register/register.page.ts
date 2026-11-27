@@ -1,33 +1,22 @@
-import { Component, inject } from "@angular/core";
+import { Component } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
-import { Router } from "@angular/router";
+import { RouterLink } from "@angular/router";
 import { api, errorMessage } from "../../services/api.service";
-import { choices } from "../../models/profile.model";
 
-@Component({ imports: [FormsModule], templateUrl: "./register.page.html" })
+@Component({ imports: [FormsModule, RouterLink], templateUrl: "./register.page.html" })
 export class RegisterPage {
-  private readonly router = inject(Router);
-  readonly choices = choices;
-  profile = { email: "", firstName: "", lastName: "", country: "", city: "", phone: "", specialty: "" };
-  password = "";
-  confirmation = "";
+  email = "";
   error = "";
   busy = false;
+  requested = false;
 
   async register(form: NgForm) {
-    if (form.invalid || this.password !== this.confirmation) return;
+    if (form.invalid || this.busy) return;
     this.busy = true;
     this.error = "";
     try {
-      const result = await api<{ verificationEmailSent: boolean }>("/auth/register/lawyer", {
-        method: "POST",
-        body: { ...this.profile, password: this.password },
-      });
-      this.password = "";
-      this.confirmation = "";
-      await this.router.navigateByUrl("/verification-email", {
-        state: { email: this.profile.email, verificationEmailSent: result.verificationEmailSent },
-      });
+      await api("/auth/register/lawyer", { method: "POST", body: { email: this.email } });
+      this.requested = true;
     } catch (error) {
       this.error = errorMessage(error);
     } finally {

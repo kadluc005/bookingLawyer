@@ -26,7 +26,24 @@ export class SessionService {
   }
 
   async signIn(email: string, password: string) {
-    const session = await api<Session>("/auth/token", { method: "POST", body: { email, password } });
+    const result = await api<Session | { passwordChangeRequired: true }>("/auth/token", {
+      method: "POST", body: { email, password },
+    });
+    if ("passwordChangeRequired" in result) {
+      this.end();
+      return null;
+    }
+    return this.start(result);
+  }
+
+  async changeTemporaryPassword(email: string, password: string, newPassword: string) {
+    const session = await api<Session>("/auth/temporary-password/change", {
+      method: "POST", body: { email, password, newPassword },
+    });
+    return this.start(session);
+  }
+
+  private start(session: Session) {
     sessionStorage.setItem(SESSION_KEY, session.accessToken);
     this.current.set(session.user);
     this.token.set(session.accessToken);

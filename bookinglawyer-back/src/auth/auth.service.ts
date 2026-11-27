@@ -1,4 +1,6 @@
+import { randomBytes } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -8,10 +10,12 @@ import { PasswordHasher, TokenService } from '@nestjs/authentication';
 import { AuditLogsService } from '../services/audit-logs.service.js';
 import type { NewClientAccountProfile } from '../services/clients.service.js';
 import { ClientsService } from '../services/clients.service.js';
-import type { NewLawyerAccountProfile } from '../services/lawyers.service.js';
-import { LawyersService } from '../services/lawyers.service.js';
+import { LawyerWorkflowMailService } from '../mail/lawyer-workflow-mail.service.js';
 import { UsersService } from '../services/users.service.js';
 import { EmailVerificationService } from './email-verification.service.js';
+
+const TEMPORARY_PASSWORD_LIFETIME = 24 * 60 * 60 * 1000;
+const RESEND_DELAY = 60_000;
 
 @Injectable()
 export class AuthService {
@@ -19,48 +23,28 @@ export class AuthService {
     private readonly passwordHasher: PasswordHasher,
     private readonly tokenService: TokenService,
     private readonly usersService: UsersService,
-    private readonly lawyersService: LawyersService,
     private readonly clientsService: ClientsService,
     private readonly auditLogsService: AuditLogsService,
     private readonly emailVerification: EmailVerificationService,
+    private readonly workflowMail: LawyerWorkflowMailService,
   ) {}
 
-  async registerLawyer(
-    email: string,
-    password: string,
-    profile: NewLawyerAccountProfile,
-  ) {
+  async registerLawyer(email: string) {
     const normalizedEmail = normalizeEmail(email);
-    await this.ensureEmailAvailable(normalizedEmail);
-    const passwordHash = await this.passwordHasher.hash(password);
-    let result: Awaited<ReturnType<LawyersService['createAccount']>>;
-    try {
-      result = await this.lawyersService.createAccount(
-        { email: normalizedEmail, passwordHash },
-        profile,
-      );
-    } catch (error) {
-      if (isEmailUniqueViolation(error)) {
-        throw new ConflictException('Email is already registered.');
-      }
-      throw error;
-    }
+    const password = randomBytes(20).toString('base64url');
+    const hash = await this.passwordHasher.hash(password);
+    const expiresAt = new Date(Date.now() + TEMPORARY_PASSWORD_LIFETIME);
+    const user = await this.usersService.createLawyerLogin(normalizedEmail, hash, expiresAt);
+    if (!user) return;
 
     await this.auditLogsService.record({
-      actorUserId: result.user.id,
+      actorUserId: user.id,
       action: 'account.registered',
       entityType: 'user',
-      entityId: result.user.id,
+      entityId: user.id,
       metadata: { role: 'lawyer' },
     });
-
-    const verificationEmailSent =
-      await this.emailVerification.send(normalizedEmail);
-    return {
-      user: withoutPasswordHash(result.user),
-      profile: result.profile,
-      verificationEmailSent,
-    };
+    await this.sendTemporaryPassword(user.id, normalizedEmail, password, hash);
   }
 
   async registerClient(
@@ -111,6 +95,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password.');
     }
     if (account.status === 'pending_email_verification') {
+      if (account.temporaryPasswordExpiresAt) {
+        if (account.temporaryPasswordExpiresAt <= new Date()) {
+          throw new ForbiddenException('Le mot de passe temporaire a expiré. Demandez de nouveaux identifiants.');
+        }
+        return { passwordChangeRequired: true as const };
+      }
       throw new ForbiddenException(
         'Confirmez votre adresse e-mail avant de vous connecter.',
       );
@@ -123,27 +113,67 @@ export class AuthService {
       );
     }
 
-    await this.auditLogsService.record({
-      actorUserId: account.id,
-      action: 'auth.login',
-      entityType: 'user',
-      entityId: account.id,
-    });
+    return this.issueSession(account.id);
+  }
 
-    const user = await this.usersService.findById(account.id);
+  async changeTemporaryPassword(email: string, password: string, newPassword: string) {
+    const account = await this.usersService.findCredentialsByEmail(normalizeEmail(email));
+    const passwordMatches = await this.passwordHasher.verify(password, account?.passwordHash);
+    if (
+      !account ||
+      !passwordMatches ||
+      account.role !== 'lawyer' ||
+      account.status !== 'pending_email_verification' ||
+      !account.temporaryPasswordExpiresAt ||
+      account.temporaryPasswordExpiresAt <= new Date()
+    ) {
+      throw new UnauthorizedException('Identifiants temporaires invalides ou expirés.');
+    }
+    if (newPassword === password) {
+      throw new BadRequestException('Choisissez un mot de passe différent du mot de passe temporaire.');
+    }
+    const hash = await this.passwordHasher.hash(newPassword);
+    const changed = await this.usersService.completeTemporaryLogin(account, hash);
+    if (!changed) throw new UnauthorizedException('Identifiants temporaires invalides ou expirés.');
+    return this.issueSession(changed.id);
+  }
+
+  private async issueSession(userId: string) {
+    const user = await this.usersService.findById(userId);
     if (user?.status !== 'active') {
       throw new UnauthorizedException('Invalid email or password.');
     }
-
-    const tokens = await this.tokenService.issue(account.id, {
-      method: 'password',
+    await this.auditLogsService.record({
+      actorUserId: userId,
+      action: 'auth.login',
+      entityType: 'user',
+      entityId: userId,
     });
-
+    const tokens = await this.tokenService.issue(userId, { method: 'password' });
     return { ...tokens, user };
   }
 
   async resendVerificationEmail(email: string) {
-    await this.emailVerification.send(normalizeEmail(email));
+    const normalizedEmail = normalizeEmail(email);
+    const account = await this.usersService.findCredentialsByEmail(normalizedEmail);
+    if (!account || account.role !== 'lawyer' || account.status !== 'pending_email_verification') return;
+    if (!account.temporaryPasswordExpiresAt) {
+      await this.emailVerification.send(normalizedEmail);
+      return;
+    }
+    const now = Date.now();
+    if (account.temporaryPasswordExpiresAt.getTime() > now + TEMPORARY_PASSWORD_LIFETIME - RESEND_DELAY) return;
+    const password = randomBytes(20).toString('base64url');
+    const hash = await this.passwordHasher.hash(password);
+    const rotated = await this.usersService.rotateTemporaryPassword(
+      account, hash, new Date(now + TEMPORARY_PASSWORD_LIFETIME),
+    );
+    if (rotated) await this.sendTemporaryPassword(rotated.id, normalizedEmail, password, hash);
+  }
+
+  private async sendTemporaryPassword(id: string, email: string, password: string, hash: string) {
+    const sent = await this.workflowMail.send('credentials', email, { email, password });
+    if (!sent) await this.usersService.expireTemporaryPassword(id, hash);
   }
 
   private async ensureEmailAvailable(email: string) {

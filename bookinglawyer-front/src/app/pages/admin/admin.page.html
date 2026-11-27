@@ -9,6 +9,8 @@
       <a routerLink="/administration" [class.current]="!showLawyers" (click)="menuOpen = false">◫ <span>Vue d’ensemble</span></a>
       <a routerLink="/administration/avocats" [class.current]="showLawyers" (click)="menuOpen = false">♙ <span>Avocats</span></a>
       <a routerLink="/administration" fragment="clients" (click)="menuOpen = false">♧ <span>Clients</span></a>
+      <div class="nav-unavailable"><span aria-hidden="true">▤</span><span>News</span><small>Bientôt</small></div>
+      <div class="nav-unavailable"><span aria-hidden="true">§</span><span>Pro bono</span><small>Bientôt</small></div>
       <a routerLink="/annuaire">↗ <span>Voir le site</span></a>
     </nav>
     <div class="sidebar-bottom"><span>{{ session.account()?.email }}</span><button type="button" (click)="signOut()">Déconnexion</button></div>
@@ -34,11 +36,11 @@
         <div class="table-wrap"><table><thead><tr><th>Avocat</th><th>Localisation</th><th>Spécialité</th><th>Validation</th><th>Dossier</th></tr></thead><tbody>
           @for (lawyer of lawyers; track lawyer.lawyerId) {
             <tr>
-              <td data-label="Avocat"><strong>Me {{ lawyer.firstName }} {{ lawyer.lastName }}</strong><small>{{ lawyer.email }}</small></td>
-              <td data-label="Localisation">{{ lawyer.city }}, {{ lawyer.country }}</td>
-              <td data-label="Spécialité">{{ specialties[lawyer.specialty] }}</td>
-              <td data-label="Validation">{{ lawyer.submittedAt ? reviewLabels[lawyer.reviewStatus] : "Dossier à soumettre" }}</td>
-              <td data-label="Dossier"><a class="button outline" [routerLink]="['/administration/avocats', lawyer.lawyerId]">Ouvrir le dossier</a></td>
+              <td data-label="Avocat">@if (lawyer.firstName) { <strong>Me {{ lawyer.firstName }} {{ lawyer.lastName }}</strong> }<small>{{ lawyer.email }}</small></td>
+              <td data-label="Localisation">@if (lawyer.city && lawyer.country) { {{ lawyer.city }}, {{ lawyer.country }} } @else { — }</td>
+              <td data-label="Spécialité">{{ lawyer.specialty ? specialties[lawyer.specialty] : "—" }}</td>
+              <td data-label="Validation">{{ lawyer.submittedAt && lawyer.reviewStatus ? reviewLabels[lawyer.reviewStatus] : lawyer.hasActiveMembership ? "Dossier à soumettre" : "Cotisation en attente" }}</td>
+              <td data-label="Dossier">@if (lawyer.firstName) { <a class="button outline" [routerLink]="['/administration/avocats', lawyer.lawyerId]">Ouvrir le dossier</a> } @else { — }</td>
             </tr>
           } @empty { <tr><td colspan="5">Aucun avocat inscrit.</td></tr> }
         </tbody></table></div>

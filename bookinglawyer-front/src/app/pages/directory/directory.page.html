@@ -34,8 +34,8 @@
   <h2>Trouvez le professionnel qui vous correspond</h2>
   <p>Parcourez les profils et affinez votre recherche.</p>
 </div>
-@if (session.account()?.role !== 'client') {
-  <p>Connectez-vous comme client pour consulter l’annuaire.</p>
+@if (!directory.canView()) {
+  <p>Connectez-vous à votre compte client ou avocat pour consulter l’annuaire.</p>
   <a routerLink="/connexion">Se connecter</a>
 } @else {
 <div class="filter sheet">
